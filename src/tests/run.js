@@ -85,6 +85,28 @@ try {
   assert.strictEqual(session.isLoggedIn, false);
   console.log("✅ Email Auth Service tests passed!\n");
 
+  // Test 4: Guest Mode & Onboarding completion tests
+  console.log("🧪 Running: Guest Mode & Onboarding checks...");
+  localStorage.clear();
+  const guestRes = AuthService.loginAsGuest();
+  assert.strictEqual(guestRes.session.isLoggedIn, true);
+  assert.strictEqual(guestRes.session.isGuest, true);
+  assert.ok(guestRes.profile.name.includes("Guest"));
+
+  // Trigger Onboarding completes
+  const onboardingProfile = {
+    role: 'caregiver',
+    language: 'Tamil',
+    preferredVoice: 'calm_male',
+    goal: 'Support loved one'
+  };
+  AuthService.completeOnboarding(onboardingProfile);
+  const updatedProf = AuthService.getUserProfile();
+  assert.strictEqual(updatedProf.role, 'caregiver');
+  assert.strictEqual(updatedProf.language, 'Tamil');
+  assert.strictEqual(AuthService.isOnboardingComplete(), true);
+  console.log("✅ Guest Mode & Onboarding tests passed!\n");
+
   console.log("=========================================");
   console.log("🎉 All Tests Passed Cleanly (100% Success)");
   console.log("=========================================");

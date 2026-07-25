@@ -57,7 +57,7 @@ export function AuthGate({ onStartOnboarding }) {
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-100 text-xs text-rose-800 flex items-center gap-2 font-medium">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-100 text-xs text-rose-800 flex items-center gap-2 font-medium" role="alert" aria-live="assertive">
             <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
             <span>{error}</span>
           </div>
@@ -70,26 +70,28 @@ export function AuthGate({ onStartOnboarding }) {
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
                   {t('whoAreYou')}
                 </label>
-                <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 mb-3">
+                <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 mb-3" role="group" aria-label="Registration target workspace choice">
                   <button
                     type="button"
                     onClick={() => setRole('individual')}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4F7C82] ${
                       role === 'individual'
                         ? 'bg-[#4F7C82] text-white shadow-sm'
                         : 'text-[#243746]'
                     }`}
+                    aria-label="Register as recovering individual user"
                   >
                     {t('individualRole')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setRole('caregiver')}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4F7C82] ${
                       role === 'caregiver'
                         ? 'bg-[#4F7C82] text-white shadow-sm'
                         : 'text-[#243746]'
                     }`}
+                    aria-label="Register as caregiver support user"
                   >
                     {t('caregiverRole')}
                   </button>
@@ -97,49 +99,52 @@ export function AuthGate({ onStartOnboarding }) {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                <label htmlFor="auth-name" className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
                   {t('name')}
                 </label>
                 <input
+                  id="auth-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Aparna"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82]"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82] focus:ring-2 focus:ring-[#4F7C82]"
                 />
               </div>
             </>
           )}
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+            <label htmlFor="auth-email" className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
               {t('email')}
             </label>
             <input
+              id="auth-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82]"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82] focus:ring-2 focus:ring-[#4F7C82]"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+            <label htmlFor="auth-password" className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
               {t('password')}
             </label>
             <input
+              id="auth-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82]"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82] focus:ring-2 focus:ring-[#4F7C82]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5"
+            className="w-full py-3 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4F7C82]"
           >
             <span>{isSignUp ? t('signUp') : t('signIn')}</span>
             <ArrowRight className="h-4 w-4" />
@@ -158,7 +163,8 @@ export function AuthGate({ onStartOnboarding }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <button
             onClick={loginAsGuest}
-            className="p-3 rounded-xl border border-slate-200 hover:border-[#4F7C82]/50 text-left transition-all"
+            className="p-3 rounded-xl border border-slate-200 hover:border-[#4F7C82]/50 text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4F7C82]"
+            aria-label="Enter platform anonymously as Guest"
           >
             <div className="font-bold text-xs text-[#4F7C82] mb-0.5">{t('anonymousMode')}</div>
             <div className="text-[10px] text-slate-500">{t('anonymousDesc')}</div>
@@ -166,7 +172,8 @@ export function AuthGate({ onStartOnboarding }) {
 
           <button
             onClick={enableDemoMode}
-            className="p-3 rounded-xl border border-slate-200 hover:border-[#4F7C82]/50 text-left transition-all"
+            className="p-3 rounded-xl border border-slate-200 hover:border-[#4F7C82]/50 text-left transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4F7C82]"
+            aria-label="Enable Judge Demo mode with loaded metrics logs"
           >
             <div className="font-bold text-xs text-amber-700 mb-0.5">{t('tryDemoMode')}</div>
             <div className="text-[10px] text-slate-500">{t('tryDemoDesc')}</div>
@@ -177,7 +184,8 @@ export function AuthGate({ onStartOnboarding }) {
         <div className="mt-6 text-center text-xs">
           <button
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-[#4F7C82] font-semibold hover:underline"
+            className="text-[#4F7C82] font-semibold hover:underline cursor-pointer focus:outline-none"
+            aria-label="Toggle between Sign In and Sign Up views"
           >
             {isSignUp ? t('alreadyHaveAccount') : t('createAccount')}
           </button>
