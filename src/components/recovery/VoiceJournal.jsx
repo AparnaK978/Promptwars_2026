@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { queryGeminiAI } from '../../services/gemini';
-import { Mic, MicOff, Sparkles, Volume2, Save, History, Check } from 'lucide-react';
+import { Mic, MicOff, Sparkles, Volume2, Check } from 'lucide-react';
 
 export function VoiceJournal() {
   const { addJournal, speakText } = useApp();
@@ -46,7 +46,7 @@ export function VoiceJournal() {
 
   const toggleListening = () => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      alert("Speech recognition is not supported in this browser version. You can type or use preset voice chips below.");
+      alert("Speech recognition is not supported in this browser version. You can type or select pre-loaded text below.");
       return;
     }
     setIsListening(!isListening);
@@ -76,45 +76,34 @@ export function VoiceJournal() {
     setTimeout(() => setSaved(false), 3000);
   };
 
-  // Preset zero-typing voice chips
-  const PRESET_VOICE_CHIPS = [
+  const PRESET_CHIPS = [
     "I'm feeling intense stress from work today, but I want to stay sober.",
     "I survived a tough craving spike earlier and I feel proud.",
     "I need encouragement to get through this evening."
   ];
 
   return (
-    <div className="glass-panel p-6 border border-slate-800 mb-8">
+    <div className="healthcare-card p-6 border border-slate-100 bg-white">
       
       {/* Header */}
       <div className="flex items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30">
-            <Mic className="h-6 w-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-white font-display">Hands-Free Voice Journal</h2>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                Web Speech API
-              </span>
-            </div>
-            <p className="text-xs text-slate-400">Speak naturally to express your feelings; Gemini will provide supportive feedback</p>
-          </div>
+        <div>
+          <h3 className="text-sm font-bold text-slate-900 font-display">Hands-Free Voice Journal</h3>
+          <p className="text-xs text-slate-500 mt-0.5">Express your feelings out loud. Your companion will respond with gentle support.</p>
         </div>
       </div>
 
-      {/* Preset Zero-Typing Voice Chips */}
+      {/* Preset Chips */}
       <div className="mb-4">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
-          Or tap a sample prompt to simulate voice input:
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+          Or tap a sample prompt to simulate voice entry:
         </span>
         <div className="flex flex-wrap gap-2">
-          {PRESET_VOICE_CHIPS.map((chip, idx) => (
+          {PRESET_CHIPS.map((chip, idx) => (
             <button
               key={idx}
               onClick={() => setTranscript(chip)}
-              className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-teal-500/50 text-xs text-slate-300 transition-colors text-left"
+              className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 hover:border-teal-500/50 text-xs text-slate-700 transition-colors text-left"
             >
               💬 "{chip}"
             </button>
@@ -122,55 +111,53 @@ export function VoiceJournal() {
         </div>
       </div>
 
-      {/* Transcript Textbox */}
+      {/* Textarea & Mic Trigger */}
       <div className="relative mb-4">
         <textarea
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
-          placeholder="Tap the microphone button and start speaking, or choose a prompt above..."
-          className="w-full h-32 p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-teal-400 resize-none font-sans"
+          placeholder="Tap the microphone button to start recording..."
+          className="w-full h-32 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-teal-500 resize-none"
         />
 
         <button
           onClick={toggleListening}
-          className={`absolute bottom-4 right-4 p-3 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
+          className={`absolute bottom-4 right-4 p-3 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer ${
             isListening
-              ? 'bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-600/40'
-              : 'bg-teal-500 text-slate-950 hover:bg-teal-400 shadow-lg shadow-teal-500/30'
+              ? 'bg-rose-600 text-white animate-pulse shadow-md shadow-rose-600/40'
+              : 'bg-teal-600 text-white hover:bg-teal-700 shadow-md'
           }`}
         >
           {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-          <span>{isListening ? 'Stop Recording' : 'Start Voice Input'}</span>
+          <span>{isListening ? 'Stop' : 'Voice Input'}</span>
         </button>
       </div>
 
-      {/* Action Button */}
-      <div className="flex items-center justify-between gap-3">
-        <button
-          onClick={handleAnalyze}
-          disabled={!transcript.trim() || analyzing}
-          className="flex-1 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-500/30 hover:brightness-110 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
-        >
-          <Sparkles className="h-4 w-4 fill-slate-950" />
-          <span>{analyzing ? 'Analyzing Voice Sentiment...' : 'Analyze Journal with Gemini AI'}</span>
-        </button>
-      </div>
+      {/* Analysis trigger */}
+      <button
+        onClick={handleAnalyze}
+        disabled={!transcript.trim() || analyzing}
+        className="w-full py-3 rounded-xl bg-teal-600 text-white font-bold text-xs shadow-md disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
+      >
+        <Sparkles className="h-4 w-4" />
+        <span>{analyzing ? 'Analyzing Voice Log...' : 'Submit Log to Companion'}</span>
+      </button>
 
-      {/* AI Sentiment Analysis Result */}
+      {/* AI Output */}
       {aiInsight && (
-        <div className="mt-4 glass-card p-5 rounded-2xl border border-teal-500/30 bg-teal-950/10 animate-fadeIn">
+        <div className="mt-4 healthcare-card p-5 border border-teal-100 bg-teal-50/20 animate-fadeIn">
           <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
-              <Sparkles className="h-4 w-4" />
-              Beacon AI Compassionate Insight
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1">
+              <Sparkles className="h-4 w-4 text-teal-600" />
+              Companion Response
             </span>
             {saved && (
-              <span className="text-xs font-semibold text-teal-300 flex items-center gap-1">
-                <Check className="h-3.5 w-3.5" /> Saved to Local Logs
+              <span className="text-xs font-semibold text-teal-600 flex items-center gap-1">
+                <Check className="h-3.5 w-3.5" /> Saved Locally
               </span>
             )}
           </div>
-          <p className="text-sm text-slate-200 leading-relaxed">{aiInsight}</p>
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">{aiInsight}</p>
         </div>
       )}
 

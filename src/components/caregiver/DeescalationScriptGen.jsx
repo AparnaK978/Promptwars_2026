@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { queryGeminiAI } from '../../services/gemini';
-import { Sparkles, MessageSquare, Volume2, ShieldCheck, Copy, Check, Users } from 'lucide-react';
+import { Sparkles, MessageSquare, Volume2, Copy, Check, Users } from 'lucide-react';
 
 export function DeescalationScriptGen() {
   const { speakText } = useApp();
@@ -34,12 +34,12 @@ export function DeescalationScriptGen() {
     const res = await queryGeminiAI({
       role: 'caregiver',
       mode: 'deescalate',
-      userInput: `Generate a de-escalation script for scenario: "${scenarioText}" using tone: "${toneText}". Give 3 exact lines I should say, 1 thing to avoid saying, and 1 safety tip.`
+      userInput: `Generate de-escalation statements for: "${scenarioText}" using tone: "${toneText}". Output 3 simple statements, 1 phrase to avoid, and 1 safety tip.`
     });
 
     setGeneratedScript(res.text);
     setLoading(false);
-    speakText("De-escalation script generated for caregiver guidance.");
+    speakText("Verbal statements generated for caregiver support.");
   };
 
   const handleCopy = () => {
@@ -50,33 +50,26 @@ export function DeescalationScriptGen() {
   };
 
   return (
-    <div className="glass-panel p-6 border border-purple-500/20 mb-8 bg-slate-950/70">
+    <div className="healthcare-card p-6 bg-white border border-slate-100 mb-8">
       
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-3 rounded-xl bg-purple-600/20 text-purple-400 border border-purple-500/30">
-          <Users className="h-6 w-6" />
+        <div className="p-3 rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
+          <Users className="h-5 w-5" />
         </div>
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-white font-display">Caregiver AI De-escalation Script Builder</h2>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
-              GenAI Engine
-            </span>
-          </div>
-          <p className="text-xs text-slate-400">Generate context-aware, non-confrontational scripts during intense family tension</p>
+          <h2 className="text-lg font-bold text-slate-900 font-display">Caregiver Communication Guide</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Generate verbal guidelines to help navigate difficult family conversations calmly.</p>
         </div>
       </div>
 
-      {/* Inputs */}
+      {/* Scenario Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        
-        {/* Scenario Selection */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-            Current High-Stress Scenario
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+            What is the current situation?
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 gap-2">
             {SCENARIOS.map((item) => (
               <button
                 key={item.id}
@@ -84,8 +77,8 @@ export function DeescalationScriptGen() {
                 onClick={() => setScenario(item.id)}
                 className={`p-3 rounded-xl text-xs font-semibold border text-left transition-all ${
                   scenario === item.id
-                    ? 'bg-purple-600/20 border-purple-400 text-purple-200'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                    ? 'bg-purple-50 border-purple-200 text-purple-700 font-bold'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                 }`}
               >
                 {item.label}
@@ -96,19 +89,19 @@ export function DeescalationScriptGen() {
 
         {/* Tone Selection */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
-            Desired Emotional Tone
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+            Select Preferred Tone
           </label>
-          <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 gap-2">
             {TONES.map((t) => (
               <button
                 key={t.id}
                 type="button"
                 onClick={() => setTone(t.id)}
-                className={`p-2.5 rounded-xl text-xs font-semibold border text-left transition-all ${
+                className={`p-3 rounded-xl text-xs font-semibold border text-left transition-all ${
                   tone === t.id
-                    ? 'bg-purple-600/20 border-purple-400 text-purple-200'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                    ? 'bg-purple-50 border-purple-200 text-purple-700 font-bold'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                 }`}
               >
                 {t.label}
@@ -116,48 +109,46 @@ export function DeescalationScriptGen() {
             ))}
           </div>
         </div>
-
       </div>
 
-      {/* Action Button */}
+      {/* Trigger */}
       <button
         onClick={handleGenerate}
         disabled={loading}
-        className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-2 mb-6"
+        className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 mb-6"
       >
         <Sparkles className="h-4 w-4" />
-        <span>{loading ? 'Generating AI De-escalation Script...' : 'Generate Context-Aware Script'}</span>
+        <span>{loading ? 'Structuring Statements...' : 'Generate Verbal Guide'}</span>
       </button>
 
-      {/* Generated Output */}
+      {/* Output */}
       {generatedScript && (
-        <div className="glass-card p-5 rounded-2xl border border-purple-500/30 bg-purple-950/10 animate-fadeIn">
-          <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-slate-800">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-purple-300 flex items-center gap-1.5">
-              <MessageSquare className="h-4 w-4 text-purple-400" />
-              Recommended Words To Use Right Now
+        <div className="healthcare-card p-5 border border-purple-100 bg-purple-50/10 animate-fadeIn">
+          <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-slate-100">
+            <span className="text-xs font-bold uppercase tracking-wider text-purple-700 flex items-center gap-1">
+              <MessageSquare className="h-4 w-4 text-purple-500" />
+              Suggested Verbal Response
             </span>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => speakText(generatedScript)}
-                className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
-                title="Listen to script"
+                className="p-1.5 rounded-lg bg-slate-100 text-slate-500 hover:text-slate-800"
               >
                 <Volume2 className="h-4 w-4" />
               </button>
 
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500 hover:text-slate-800 text-xs font-semibold"
               >
-                {copied ? <Check className="h-3.5 w-3.5 text-teal-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? <Check className="h-3.5 w-3.5 text-teal-600" /> : <Copy className="h-3.5 w-3.5" />}
                 <span>{copied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
           </div>
 
-          <div className="text-sm text-slate-200 whitespace-pre-line leading-relaxed font-sans">
+          <div className="text-xs sm:text-sm text-slate-700 whitespace-pre-line leading-relaxed font-sans">
             {generatedScript}
           </div>
         </div>

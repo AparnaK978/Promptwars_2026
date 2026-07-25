@@ -1,25 +1,24 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { StorageService } from '../services/storage';
-import { AuthService } from '../services/auth';
+import { AuthService, CLEAN_SLATE_PROFILE } from '../services/auth';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
   const [session, setSession] = useState(() => AuthService.getCurrentSession());
   const [userProfile, setUserProfile] = useState(() => AuthService.getUserProfile());
-  const [showOnboarding, setShowOnboarding] = useState(() => !AuthService.isOnboardingComplete());
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [role, setRoleState] = useState(() => userProfile.role || StorageService.getRole());
   const [highContrast, setHighContrastState] = useState(() => StorageService.getHighContrast());
-  const [streakDays, setStreakDays] = useState(() => StorageService.getStreakDays());
+  const [streakDays, setStreakDaysState] = useState(() => StorageService.getStreakDays());
   const [cravingLogs, setCravingLogs] = useState(() => StorageService.getCravingLogs());
   const [journals, setJournals] = useState(() => StorageService.getJournals());
 
-  // Modals & Overlays: 'emergency_script' | 'breathing' | 'image_scanner' | 'craving_scale' | 'auth' | 'pipeline'
+  // Modals & Overlays
   const [activeModal, setActiveModal] = useState(null);
   const [speechOutputEnabled, setSpeechOutputEnabled] = useState(true);
 
-  // Audio Speech Synthesis Helper
   const speakText = (text) => {
     if (!speechOutputEnabled || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
@@ -42,6 +41,11 @@ export function AppProvider({ children }) {
     const nextVal = !highContrast;
     setHighContrastState(nextVal);
     StorageService.setHighContrast(nextVal);
+  };
+
+  const setStreakDays = (val) => {
+    setStreakDaysState(val);
+    StorageService.setStreakDays(val);
   };
 
   const logCraving = (entry) => {
@@ -71,6 +75,8 @@ export function AppProvider({ children }) {
     setSession(sess);
     const prof = AuthService.getUserProfile();
     setUserProfile(prof);
+    setStreakDaysState(StorageService.getStreakDays());
+    setCravingLogs(StorageService.getCravingLogs());
   };
 
   const signup = (name, email, password) => {
@@ -78,13 +84,24 @@ export function AppProvider({ children }) {
     setSession(sess);
     setUserProfile(prof);
     setShowOnboarding(true);
+    setStreakDaysState(StorageService.getStreakDays());
+    setCravingLogs(StorageService.getCravingLogs());
   };
 
   const loginAsGuest = () => {
-    const sess = AuthService.loginAsGuest();
+    const { session: sess, profile: prof } = AuthService.loginAsGuest();
     setSession(sess);
-    const prof = AuthService.getUserProfile();
     setUserProfile(prof);
+    setStreakDaysState(StorageService.getStreakDays());
+    setCravingLogs(StorageService.getCravingLogs());
+  };
+
+  const enableDemoMode = () => {
+    const { session: sess, profile: prof } = AuthService.enableDemoMode();
+    setSession(sess);
+    setUserProfile(prof);
+    setStreakDaysState(StorageService.getStreakDays());
+    setCravingLogs(StorageService.getCravingLogs());
   };
 
   const completeOnboarding = (profileData) => {
@@ -96,6 +113,15 @@ export function AppProvider({ children }) {
   const updateProfile = (data) => {
     const updated = AuthService.saveUserProfile(data);
     setUserProfile(updated);
+  };
+
+  const logout = () => {
+    AuthService.logout();
+    setSession({ isLoggedIn: false, isGuest: false });
+    setUserProfile(CLEAN_SLATE_PROFILE);
+    setStreakDaysState(0);
+    setCravingLogs([]);
+    setShowOnboarding(false);
   };
 
   return (
@@ -122,8 +148,10 @@ export function AppProvider({ children }) {
       login,
       signup,
       loginAsGuest,
+      enableDemoMode,
       completeOnboarding,
-      updateProfile
+      updateProfile,
+      logout
     }}>
       {children}
     </AppContext.Provider>

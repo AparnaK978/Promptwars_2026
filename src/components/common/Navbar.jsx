@@ -1,52 +1,51 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, User, Users, PhoneCall, Volume2, VolumeX, Eye, AlertTriangle, Cpu, Globe } from 'lucide-react';
+import { Shield, User, Users, Volume2, VolumeX, Eye, AlertTriangle, Cpu, LogOut } from 'lucide-react';
 
 export function Navbar() {
-  const { role, setRole, highContrast, toggleHighContrast, speechOutputEnabled, setSpeechOutputEnabled, setActiveModal, userProfile } = useApp();
+  const { role, setRole, highContrast, toggleHighContrast, speechOutputEnabled, setSpeechOutputEnabled, setActiveModal, userProfile, logout } = useApp();
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-4 lg:px-8 py-3">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-100 bg-white/90 backdrop-blur-md px-4 lg:px-8 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         
         {/* Brand Logo */}
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-teal-500/20">
-            <Shield className="h-6 w-6 text-slate-950 stroke-[2.5]" />
+        <div className="flex items-center gap-2.5">
+          <div className="h-9 w-9 rounded-xl bg-teal-600 flex items-center justify-center shadow-sm">
+            <Shield className="h-5 w-5 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-display text-xl font-extrabold tracking-tight text-white">BEACON <span className="gradient-text-teal">AI</span></span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <span className="font-display text-lg font-bold tracking-tight text-slate-900">BEACON</span>
+              <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100">
                 India
               </span>
             </div>
-            <p className="text-xs text-slate-400 hidden sm:block">Calm Recovery Companion</p>
           </div>
         </div>
 
-        {/* Center: Dual Role Toggle */}
-        <div className="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 shadow-inner">
+        {/* Dual Role Toggle */}
+        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
           <button
             onClick={() => setRole('individual')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               role === 'individual'
-                ? 'bg-teal-500 text-slate-950 shadow-md shadow-teal-500/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <User className="h-4 w-4" />
+            <User className="h-3.5 w-3.5" />
             <span>Individual</span>
           </button>
           <button
             onClick={() => setRole('caregiver')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               role === 'caregiver'
-                ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-purple-600 text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Users className="h-4 w-4" />
+            <Users className="h-3.5 w-3.5" />
             <span>Caregiver</span>
           </button>
         </div>
@@ -54,45 +53,43 @@ export function Navbar() {
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
           
-          {/* AI Pipeline Architecture Trigger for Judges */}
+          {/* AI Pipeline Architecture Visualizer */}
           <button
             onClick={() => setActiveModal('pipeline')}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-teal-300 text-xs font-semibold"
-            title="View AI Pipeline Architecture"
+            className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-teal-700 text-xs font-semibold"
           >
-            <Cpu className="h-4 w-4 text-teal-400" />
-            <span>AI Pipeline</span>
+            <Cpu className="h-3.5 w-3.5 text-teal-600" />
+            <span>Pipeline</span>
           </button>
 
           {/* Audio Speech Toggle */}
           <button
             onClick={() => setSpeechOutputEnabled(!speechOutputEnabled)}
             className={`p-2 rounded-xl border transition-colors ${
-              speechOutputEnabled ? 'bg-slate-800 border-slate-700 text-cyan-400' : 'bg-slate-900 border-slate-800 text-slate-500'
+              speechOutputEnabled ? 'bg-slate-100 border-slate-200 text-teal-600' : 'bg-slate-50 border-slate-100 text-slate-400'
             }`}
-            title={speechOutputEnabled ? "Voice Output Active" : "Voice Output Muted"}
+            title="Audio Companion Voice output"
           >
             {speechOutputEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
 
-          {/* High Contrast Toggle */}
+          {/* High Contrast */}
           <button
             onClick={toggleHighContrast}
             className={`p-2 rounded-xl border transition-colors ${
-              highContrast ? 'bg-amber-400 text-slate-950 border-amber-300 font-bold' : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+              highContrast ? 'bg-teal-600 text-white' : 'bg-slate-50 border-slate-100 text-slate-500'
             }`}
-            title="Toggle Accessibility High Contrast"
           >
             <Eye className="h-4 w-4" />
           </button>
 
-          {/* Crisis SOS Emergency Button */}
+          {/* Exit / Logout to Landing Page */}
           <button
-            onClick={() => setActiveModal('emergency_script')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white font-bold text-xs sm:text-sm shadow-lg shadow-rose-600/30 hover:from-rose-500 hover:to-red-500 active:scale-95 transition-all animate-pulse-glow"
+            onClick={logout}
+            className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+            title="Return to Landing Page"
           >
-            <AlertTriangle className="h-4 w-4 stroke-[2.5]" />
-            <span>112 SOS</span>
+            <LogOut className="h-4 w-4" />
           </button>
 
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Flame, ShieldCheck, Heart, Award, Calendar, Activity, Zap } from 'lucide-react';
+import { Flame, ShieldCheck, Award, Calendar, Activity } from 'lucide-react';
 
 export function RecoveryDashboard() {
   const { streakDays, cravingLogs, setStreakDays } = useApp();
@@ -19,121 +19,86 @@ export function RecoveryDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         
         {/* Active Streak Widget */}
-        <div className="glass-panel p-6 border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-slate-950 to-slate-950 flex flex-col justify-between">
+        <div className="healthcare-card p-6 border border-slate-100 bg-white flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                <Flame className="h-4 w-4 fill-amber-400" />
-                Active Recovery Streak
+              <span className="text-xs font-bold uppercase tracking-wider text-teal-600 flex items-center gap-1">
+                <Flame className="h-4 w-4 fill-teal-50" />
+                Active Streak
               </span>
               <button
                 onClick={() => setStreakDays(streakDays + 1)}
-                className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 hover:bg-amber-500/20"
+                className="text-[10px] px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-100 hover:bg-teal-100"
               >
                 +1 Day
               </button>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-black font-display text-white">{streakDays}</span>
-              <span className="text-sm font-bold text-amber-300">Days Consecutive</span>
+              <span className="text-4xl font-black text-slate-900 font-display">{streakDays}</span>
+              <span className="text-xs font-bold text-teal-600">Days Consecutive</span>
             </div>
-            <p className="text-xs text-slate-400 mt-2">Every urge resisted is a victory for your future self.</p>
+            <p className="text-xs text-slate-500 mt-2">Every urge resisted is a victory.</p>
           </div>
         </div>
 
         {/* Cravings Resisted Counter */}
-        <div className="glass-panel p-6 border border-teal-500/30 bg-gradient-to-br from-teal-950/20 via-slate-950 to-slate-950 flex flex-col justify-between">
+        <div className="healthcare-card p-6 border border-slate-100 bg-white flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1">
-                <ShieldCheck className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-wider text-sky-600 flex items-center gap-1">
+                <ShieldCheck className="h-4 w-4 text-sky-600" />
                 Cravings Overcome
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-4xl sm:text-5xl font-black font-display text-white">{cravingLogs.length + 18}</span>
-              <span className="text-sm font-bold text-teal-300">Intense Urges</span>
+              <span className="text-4xl font-black text-slate-900 font-display">{cravingLogs.length + (streakDays > 0 ? 12 : 0)}</span>
+              <span className="text-xs font-bold text-sky-600">Total Urges</span>
             </div>
-            <p className="text-xs text-slate-400 mt-2">Zero-typing grounding used successfully.</p>
+            <p className="text-xs text-slate-500 mt-2">Grounding exercises used successfully.</p>
           </div>
         </div>
 
-        {/* Support Safety Status */}
-        <div className="glass-panel p-6 border border-cyan-500/30 bg-gradient-to-br from-cyan-950/20 via-slate-950 to-slate-950 flex flex-col justify-between">
+        {/* Safety Status */}
+        <div className="healthcare-card p-6 border border-slate-100 bg-white flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-rose-600 flex items-center gap-1">
                 <Activity className="h-4 w-4" />
                 Safety Status
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black font-display text-emerald-400">Protected</span>
+              <span className="text-xl font-bold text-emerald-600 font-display">Active Support</span>
             </div>
-            <p className="text-xs text-slate-400 mt-2">988 SAMHSA Crisis hotlines & emergency contacts active.</p>
+            <p className="text-xs text-slate-500 mt-2">112/108 & emergency contacts configured.</p>
           </div>
         </div>
 
       </div>
 
       {/* Milestone Badges */}
-      <div className="glass-panel p-6 border border-slate-800">
-        <h3 className="text-base font-bold text-white font-display mb-3 flex items-center gap-2">
-          <Award className="h-5 w-5 text-amber-400" />
-          Recovery Milestone Badges
+      <div className="healthcare-card p-6 bg-white border border-slate-100">
+        <h3 className="text-sm font-bold text-slate-900 font-display mb-4 flex items-center gap-2">
+          <Award className="h-5 w-5 text-teal-600" />
+          Recovery Milestones
         </h3>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {MILESTONES.map((m, idx) => (
             <div
               key={idx}
-              className={`p-4 rounded-xl border text-center transition-all ${
+              className={`p-4 rounded-2xl border text-center transition-all ${
                 m.status === 'unlocked'
-                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-                  : 'bg-slate-900/40 border-slate-800 text-slate-500 opacity-60'
+                  ? 'bg-teal-50/50 border-teal-100 text-teal-700 font-semibold'
+                  : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60'
               }`}
             >
-              <Award className={`h-6 w-6 mx-auto mb-2 ${m.status === 'unlocked' ? 'text-amber-400' : 'text-slate-600'}`} />
-              <div className="font-bold text-sm text-slate-100">{m.label}</div>
-              <div className="text-[11px] mt-1">{m.status === 'unlocked' ? '🏆 Achieved' : '🔒 In Progress'}</div>
+              <Award className={`h-6 w-6 mx-auto mb-2 ${m.status === 'unlocked' ? 'text-teal-600' : 'text-slate-400'}`} />
+              <div className="font-bold text-xs text-slate-900">{m.label}</div>
+              <div className="text-[10px] mt-1">{m.status === 'unlocked' ? '🏆 Achieved' : '🔒 Locked'}</div>
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Recent Craving Logs History */}
-      <div className="glass-panel p-6 border border-slate-800">
-        <h3 className="text-base font-bold text-white font-display mb-4 flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-teal-400" />
-          Recent Craving Log History
-        </h3>
-
-        {cravingLogs.length > 0 ? (
-          <div className="space-y-2.5">
-            {cravingLogs.slice(0, 5).map((log) => (
-              <div key={log.id} className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-3">
-                  <span className={`px-2 py-1 rounded font-bold ${
-                    log.intensity >= 7 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-                  }`}>
-                    Level {log.intensity}
-                  </span>
-                  <div>
-                    <div className="font-semibold text-slate-200">{log.triggers?.join(', ') || 'General Craving'}</div>
-                    <div className="text-[10px] text-slate-400">{log.timestamp} • {log.date}</div>
-                  </div>
-                </div>
-                <div className="text-slate-400 text-right max-w-xs truncate hidden sm:block">
-                  {log.aiAdvice}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-xs text-slate-400">
-            No craving logs recorded yet today. Use the Zero-Typing Hub above whenever you feel an urge!
-          </div>
-        )}
       </div>
 
     </div>
