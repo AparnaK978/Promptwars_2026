@@ -168,10 +168,11 @@ export function AppProvider({ children }) {
     setCravingLogs(StorageService.getCravingLogs());
   };
 
-  const signup = (name, email, password) => {
-    const { session: sess, profile: prof } = AuthService.signup(name, email, password);
+  const signup = (name, email, password, role) => {
+    const { session: sess, profile: prof } = AuthService.signup(name, email, password, role);
     setSession(sess);
     setUserProfile(prof);
+    setRoleState(prof.role);
     setShowOnboarding(true);
     setStreakDaysState(StorageService.getStreakDays());
     setCravingLogs(StorageService.getCravingLogs());

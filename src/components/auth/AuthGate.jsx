@@ -5,6 +5,7 @@ import { Shield, Sparkles, User, Key, AlertCircle, ArrowRight } from 'lucide-rea
 export function AuthGate({ onStartOnboarding }) {
   const { login, signup, loginAsGuest, enableDemoMode } = useApp();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [role, setRole] = useState('individual'); // 'individual' | 'caregiver'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -25,7 +26,7 @@ export function AuthGate({ onStartOnboarding }) {
           setError("Name is required.");
           return;
         }
-        signup(name, email, password);
+        signup(name, email, password, role);
       } else {
         login(email, password);
       }
@@ -64,18 +65,50 @@ export function AuthGate({ onStartOnboarding }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignUp && (
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82]"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                  Recovery Role
+                </label>
+                <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setRole('individual')}
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      role === 'individual'
+                        ? 'bg-[#4F7C82] text-white shadow-sm'
+                        : 'text-[#243746]'
+                    }`}
+                  >
+                    Individual Recovery
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole('caregiver')}
+                    className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      role === 'caregiver'
+                        ? 'bg-[#4F7C82] text-white shadow-sm'
+                        : 'text-[#243746]'
+                    }`}
+                  >
+                    Caregiver Support
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-[#4F7C82]"
+                />
+              </div>
+            </>
           )}
 
           <div>

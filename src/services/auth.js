@@ -46,7 +46,9 @@ export const AuthService = {
 
   getUserProfile() {
     try {
-      const data = localStorage.getItem(AUTH_KEYS.USER_PROFILE);
+      const session = this.getCurrentSession();
+      const profileKey = session.email ? `${AUTH_KEYS.USER_PROFILE}_${session.email}` : AUTH_KEYS.USER_PROFILE;
+      const data = localStorage.getItem(profileKey);
       return data ? JSON.parse(data) : CLEAN_SLATE_PROFILE;
     } catch {
       return CLEAN_SLATE_PROFILE;
@@ -54,8 +56,10 @@ export const AuthService = {
   },
 
   saveUserProfile(profile) {
+    const session = this.getCurrentSession();
+    const profileKey = session.email ? `${AUTH_KEYS.USER_PROFILE}_${session.email}` : AUTH_KEYS.USER_PROFILE;
     const updated = { ...this.getUserProfile(), ...profile };
-    localStorage.setItem(AUTH_KEYS.USER_PROFILE, JSON.stringify(updated));
+    localStorage.setItem(profileKey, JSON.stringify(updated));
     return updated;
   },
 
@@ -76,10 +80,10 @@ export const AuthService = {
     return session;
   },
 
-  signup(name, email, password) {
+  signup(name, email, password, role) {
     const session = { isLoggedIn: true, isGuest: false, email };
     localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
-    const profile = { ...CLEAN_SLATE_PROFILE, email, name };
+    const profile = { ...CLEAN_SLATE_PROFILE, email, name, role: role || 'individual' };
     this.saveUserProfile(profile);
     return { session, profile };
   },
