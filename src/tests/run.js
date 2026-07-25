@@ -2,6 +2,16 @@
 import assert from 'assert';
 import { calculateRiskAssessment } from '../services/riskEngine.js';
 import { getTranslation } from '../services/i18n.js';
+import { AuthService } from '../services/auth.js';
+
+// Simple mock for browser localStorage in Node test runner
+const storage = {};
+global.localStorage = {
+  getItem: (key) => storage[key] || null,
+  setItem: (key, val) => { storage[key] = String(val); },
+  removeItem: (key) => { delete storage[key]; },
+  clear: () => { Object.keys(storage).forEach(k => delete storage[k]); }
+};
 
 console.log("=========================================");
 console.log("🏃 Running Automated Healthcare Test Suite");
@@ -47,6 +57,24 @@ try {
   assert.strictEqual(lowRisk.riskLevel, 'Low');
   assert.ok(lowRisk.score >= 80);
   console.log("✅ AI Relapse Risk engine tests passed!\n");
+
+  // Test 3: Email Sign Up & Login checks
+  console.log("🧪 Running: Email Auth Service validation tests...");
+  localStorage.clear();
+  
+  const signUpRes = AuthService.signup('Aparna', 'krishnakumaraparna978@gmail.com', 'testpassword123');
+  assert.strictEqual(signUpRes.session.isLoggedIn, true);
+  assert.strictEqual(signUpRes.session.isGuest, false);
+  assert.strictEqual(signUpRes.profile.name, 'Aparna');
+  
+  const loginRes = AuthService.login('krishnakumaraparna978@gmail.com', 'testpassword123');
+  assert.strictEqual(loginRes.isLoggedIn, true);
+  assert.strictEqual(loginRes.isGuest, false);
+  
+  AuthService.logout();
+  const session = AuthService.getCurrentSession();
+  assert.strictEqual(session.isLoggedIn, false);
+  console.log("✅ Email Auth Service tests passed!\n");
 
   console.log("=========================================");
   console.log("🎉 All Tests Passed Cleanly (100% Success)");

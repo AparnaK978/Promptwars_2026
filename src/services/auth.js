@@ -68,6 +68,22 @@ export const AuthService = {
     localStorage.setItem(AUTH_KEYS.ONBOARDING_COMPLETE, 'true');
   },
 
+  login(email, password) {
+    const session = { isLoggedIn: true, isGuest: false, email };
+    localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
+    const profile = { ...CLEAN_SLATE_PROFILE, email, name: email.split('@')[0] };
+    this.saveUserProfile(profile);
+    return session;
+  },
+
+  signup(name, email, password) {
+    const session = { isLoggedIn: true, isGuest: false, email };
+    localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
+    const profile = { ...CLEAN_SLATE_PROFILE, email, name };
+    this.saveUserProfile(profile);
+    return { session, profile };
+  },
+
   enableDemoMode() {
     localStorage.setItem('beacon_demo_mode', 'true');
     this.saveUserProfile(INDIAN_DEMO_PROFILE);
