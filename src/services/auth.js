@@ -1,4 +1,4 @@
-// Modular authentication and user profile persistence service
+// Modular authentication and user profile persistence with Clean Slate & Indian Demo Mode support
 
 const AUTH_KEYS = {
   USER_SESSION: 'beacon_user_session',
@@ -6,44 +6,50 @@ const AUTH_KEYS = {
   ONBOARDING_COMPLETE: 'beacon_onboarding_complete'
 };
 
-export const DEFAULT_PROFILE = {
-  id: 'guest_user_1',
-  isGuest: true,
-  email: 'guest@beacon-recovery.ai',
-  name: 'Alex Morgan',
+// Clean Slate Default Profile for Real First-Time Users
+export const CLEAN_SLATE_PROFILE = {
+  id: '',
+  isGuest: false,
+  email: '',
+  name: 'User',
   role: 'individual', // 'individual' | 'caregiver'
-  startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 14 days ago
-  emergencyContacts: [
-    { id: '1', name: 'Sarah Morgan', relationship: 'Sister / Caregiver', phone: '555-0199' },
-    { id: '2', name: 'Dr. Robert Vance', relationship: 'Recovery Counselor', phone: '555-0144' }
-  ],
-  goals: ['Maintain daily urge surfing', 'Improve sleep quality', 'Build crisis resilience'],
-  triggers: ['High Work Stress', 'Environmental Cues', 'Sleep Deprivation'],
-  copingStrategies: ['4-7-8 Breathing', 'Voice Journaling', '5-4-3-2-1 Grounding'],
-  preferredVoice: 'calm_female', // 'calm_female' | 'encouraging_male' | 'gentle_neutral'
-  notifications: {
-    dailyCheckin: true,
-    cravingAlerts: true,
-    caregiverSync: false
-  }
+  language: 'English', // 'English' | 'Hindi' | 'Malayalam' | 'Tamil' | 'Kannada' | 'Telugu'
+  preferredVoice: 'calm_female', // 'calm_female' | 'calm_male' | 'neutral'
+  emergencyContact: { name: '', phone: '', relationship: '' },
+  goal: 'Reduce cravings',
+  isDemo: false
+};
+
+// Realistic Indian Profile for Hackathon Judges ("Try Demo Experience")
+export const INDIAN_DEMO_PROFILE = {
+  id: 'demo_judge_1',
+  isGuest: true,
+  email: 'rahul.sharma@beacon-recovery.in',
+  name: 'Rahul Sharma',
+  role: 'individual',
+  language: 'English',
+  preferredVoice: 'calm_female',
+  emergencyContact: { name: 'Priya Sharma', phone: '112 / 9876543210', relationship: 'Spouse / Caregiver' },
+  goal: 'Stay sober & build daily resilience',
+  isDemo: true
 };
 
 export const AuthService = {
   getCurrentSession() {
     try {
       const data = localStorage.getItem(AUTH_KEYS.USER_SESSION);
-      return data ? JSON.parse(data) : { isLoggedIn: true, isGuest: true };
+      return data ? JSON.parse(data) : { isLoggedIn: false, isGuest: false };
     } catch {
-      return { isLoggedIn: true, isGuest: true };
+      return { isLoggedIn: false, isGuest: false };
     }
   },
 
   getUserProfile() {
     try {
       const data = localStorage.getItem(AUTH_KEYS.USER_PROFILE);
-      return data ? JSON.parse(data) : DEFAULT_PROFILE;
+      return data ? JSON.parse(data) : CLEAN_SLATE_PROFILE;
     } catch {
-      return DEFAULT_PROFILE;
+      return CLEAN_SLATE_PROFILE;
     }
   },
 
@@ -62,27 +68,26 @@ export const AuthService = {
     localStorage.setItem(AUTH_KEYS.ONBOARDING_COMPLETE, 'true');
   },
 
-  login(email, password) {
-    const session = { isLoggedIn: true, isGuest: false, email };
+  enableDemoMode() {
+    localStorage.setItem('beacon_demo_mode', 'true');
+    this.saveUserProfile(INDIAN_DEMO_PROFILE);
+    localStorage.setItem(AUTH_KEYS.ONBOARDING_COMPLETE, 'true');
+    const session = { isLoggedIn: true, isGuest: true, isDemo: true };
     localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
-    return session;
-  },
-
-  signup(name, email, password) {
-    const profile = { ...DEFAULT_PROFILE, id: Date.now().toString(), name, email, isGuest: false };
-    this.saveUserProfile(profile);
-    const session = { isLoggedIn: true, isGuest: false, email };
-    localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
-    return { session, profile };
+    return { session, profile: INDIAN_DEMO_PROFILE };
   },
 
   loginAsGuest() {
+    const guestProf = { ...CLEAN_SLATE_PROFILE, id: 'guest_' + Date.now(), isGuest: true, name: 'Guest User' };
+    this.saveUserProfile(guestProf);
     const session = { isLoggedIn: true, isGuest: true };
     localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
-    return session;
+    return { session, profile: guestProf };
   },
 
   logout() {
     localStorage.removeItem(AUTH_KEYS.USER_SESSION);
+    localStorage.removeItem(AUTH_KEYS.ONBOARDING_COMPLETE);
+    localStorage.setItem('beacon_demo_mode', 'false');
   }
 };

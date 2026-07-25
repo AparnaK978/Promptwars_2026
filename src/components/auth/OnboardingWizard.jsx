@@ -1,49 +1,40 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Shield, User, Users, Calendar, Target, AlertTriangle, Heart, Volume2, Bell, Check, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Shield, User, Users, Volume2, Check, ChevronRight, ChevronLeft, Globe, Phone, Target } from 'lucide-react';
 
 export function OnboardingWizard({ onComplete }) {
-  const { userProfile, updateProfile, completeOnboarding, setRole } = useApp();
+  const { userProfile, completeOnboarding, setRole, speakText } = useApp();
   const [step, setStep] = useState(1);
 
-  // Form State
+  // 1-Question-Per-Step State
   const [role, setRoleState] = useState(userProfile.role || 'individual');
-  const [startDate, setStartDate] = useState(userProfile.startDate || new Date().toISOString().split('T')[0]);
-  const [goals, setGoals] = useState(userProfile.goals || ['Maintain daily urge surfing', 'Improve sleep quality']);
-  const [contacts, setContacts] = useState(userProfile.emergencyContacts || [
-    { id: '1', name: 'Sarah Morgan', relationship: 'Sister / Caregiver', phone: '555-0199' }
-  ]);
-  const [triggers, setTriggers] = useState(userProfile.triggers || ['High Work Stress', 'Sleep Deprivation']);
-  const [coping, setCoping] = useState(userProfile.copingStrategies || ['4-7-8 Breathing', 'Voice Journaling']);
+  const [language, setLanguage] = useState(userProfile.language || 'English');
   const [voice, setVoice] = useState(userProfile.preferredVoice || 'calm_female');
-  const [notifications, setNotifications] = useState(userProfile.notifications || {
-    dailyCheckin: true,
-    cravingAlerts: true,
-    caregiverSync: false
-  });
+  const [contactName, setContactName] = useState(userProfile.emergencyContact?.name || '');
+  const [contactPhone, setContactPhone] = useState(userProfile.emergencyContact?.phone || '');
+  const [contactRel, setContactRel] = useState(userProfile.emergencyContact?.relationship || '');
+  const [goal, setGoal] = useState(userProfile.goal || 'Reduce cravings');
 
-  const GOAL_OPTIONS = ['Maintain daily urge surfing', 'Improve sleep quality', 'Build crisis resilience', 'Learn caregiver de-escalation', 'Track daily streaks'];
-  const TRIGGER_OPTIONS = ['High Work Stress', 'Environmental Cues', 'Sleep Deprivation', 'Emotional Fatigue', 'Social Pressure', 'Physical Pain'];
-  const COPING_OPTIONS = ['4-7-8 Breathing', 'Voice Journaling', '5-4-3-2-1 Grounding', '1-Tap Craving SOS', 'Caregiver Call Script'];
+  const LANGUAGES = ['English', 'Hindi', 'Malayalam', 'Tamil', 'Kannada', 'Telugu'];
+  const VOICES = [
+    { id: 'calm_female', label: 'Calm Female', sampleText: 'Hello, I am Beacon AI. I am here to support your recovery journey.' },
+    { id: 'calm_male', label: 'Calm Male', sampleText: 'Welcome. Take a deep breath with me, you are safe here.' },
+    { id: 'neutral', label: 'Neutral Voice', sampleText: 'Grounding protocol ready whenever you feel an urge.' }
+  ];
+  const GOALS = ['Reduce cravings', 'Stay sober', 'Support loved one', 'Learn about recovery'];
 
-  const toggleArrayItem = (arr, setArr, item) => {
-    if (arr.includes(item)) {
-      setArr(arr.filter((i) => i !== item));
-    } else {
-      setArr([...arr, item]);
-    }
+  const handlePreviewVoice = (sampleText) => {
+    speakText(sampleText);
   };
 
   const handleFinish = () => {
     const finalProfile = {
       role,
-      startDate,
-      goals,
-      emergencyContacts: contacts,
-      triggers,
-      copingStrategies: coping,
+      language,
       preferredVoice: voice,
-      notifications
+      emergencyContact: { name: contactName, phone: contactPhone, relationship: contactRel },
+      goal,
+      isDemo: false
     };
 
     setRole(role);
@@ -53,13 +44,13 @@ export function OnboardingWizard({ onComplete }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fadeIn">
-      <div className="glass-panel w-full max-w-xl p-6 sm:p-8 relative border border-slate-700 shadow-2xl bg-slate-950">
+      <div className="glass-panel w-full max-w-lg p-6 sm:p-8 relative border border-slate-700 shadow-2xl bg-slate-950">
         
-        {/* Step Progression Bar */}
+        {/* Step Indicator */}
         <div className="flex items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-800">
           <div>
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-teal-400">Step {step} of 5</span>
-            <h2 className="text-xl font-bold text-white font-display">Personalize Recovery Profile</h2>
+            <h2 className="text-xl font-bold text-white font-display">Personalize Companion</h2>
           </div>
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((s) => (
@@ -73,238 +64,166 @@ export function OnboardingWizard({ onComplete }) {
           </div>
         </div>
 
-        {/* Step 1: Role Selection */}
+        {/* STEP 1: Who are you? */}
         {step === 1 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-white">Select Your Primary Role</h3>
-            <p className="text-xs text-slate-400">Beacon AI adapts its layout, prompts, and emergency tools to your role.</p>
+            <h3 className="text-lg font-bold text-white font-display">Step 1: Who are you?</h3>
+            <p className="text-xs text-slate-400">Select how Beacon AI should tailor your companion experience.</p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-3">
               <button
                 type="button"
                 onClick={() => setRoleState('individual')}
-                className={`p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                   role === 'individual'
                     ? 'bg-teal-500/20 border-teal-400 text-teal-300'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
                 }`}
               >
-                <User className="h-6 w-6 mb-3 text-teal-400" />
+                <User className="h-6 w-6 text-teal-400 shrink-0" />
                 <div>
-                  <div className="font-bold text-sm text-white">Individual in Recovery</div>
-                  <div className="text-xs text-slate-400 mt-1">Access zero-typing SOS, urge surfing, and voice journals.</div>
+                  <div className="font-bold text-sm text-white">Recovering Individual</div>
+                  <div className="text-xs text-slate-400 mt-0.5">Urge surfing, voice journals, and zero-typing crisis support.</div>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setRoleState('caregiver')}
-                className={`p-5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 ${
                   role === 'caregiver'
                     ? 'bg-purple-600/20 border-purple-400 text-purple-200'
                     : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
                 }`}
               >
-                <Users className="h-6 w-6 mb-3 text-purple-400" />
+                <Users className="h-6 w-6 text-purple-400 shrink-0" />
                 <div>
-                  <div className="font-bold text-sm text-white">Caregiver / Family</div>
-                  <div className="text-xs text-slate-400 mt-1">Access AI de-escalation scripts and Naloxone CPR protocols.</div>
+                  <div className="font-bold text-sm text-white">Caregiver / Loved One</div>
+                  <div className="text-xs text-slate-400 mt-0.5">De-escalation scripts, family support, and 112/108 guides.</div>
                 </div>
               </button>
             </div>
           </div>
         )}
 
-        {/* Step 2: Start Date & Goals */}
+        {/* STEP 2: Preferred Language */}
         {step === 2 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-white">Recovery Start Date & Target Goals</h3>
-            
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Recovery Start / Commitment Date
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:outline-none focus:border-teal-400 font-mono"
-              />
-            </div>
+            <h3 className="text-lg font-bold text-white font-display">Step 2: Preferred Language</h3>
+            <p className="text-xs text-slate-400">Select your preferred language for prompts and resources.</p>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Primary Goals (Select all that apply)
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {GOAL_OPTIONS.map((g) => {
-                  const selected = goals.includes(g);
-                  return (
-                    <button
-                      key={g}
-                      type="button"
-                      onClick={() => toggleArrayItem(goals, setGoals, g)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                        selected
-                          ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      {selected ? '✓ ' : '+ '}{g}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="grid grid-cols-2 gap-2.5">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang}
+                  type="button"
+                  onClick={() => setLanguage(lang)}
+                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all ${
+                    language === lang
+                      ? 'bg-teal-500/20 border-teal-400 text-teal-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                  }`}
+                >
+                  <span>{lang}</span>
+                  {language === lang && <Check className="h-4 w-4 text-teal-400" />}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Step 3: Emergency Contacts */}
+        {/* STEP 3: Preferred Voice Persona */}
         {step === 3 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-white">Emergency Contacts</h3>
-            <p className="text-xs text-slate-400">Designate trusted loved ones or counselors for 1-tap crisis notification.</p>
+            <h3 className="text-lg font-bold text-white font-display">Step 3: Preferred Voice</h3>
+            <p className="text-xs text-slate-400">Listen to audio previews and choose your preferred AI companion voice.</p>
 
-            <div className="space-y-2">
-              {contacts.map((c, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3 text-xs">
-                  <div>
-                    <div className="font-bold text-white">{c.name} ({c.relationship})</div>
-                    <div className="text-slate-400 font-mono">{c.phone}</div>
-                  </div>
+            <div className="space-y-2.5">
+              {VOICES.map((v) => (
+                <div
+                  key={v.id}
+                  className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 transition-all ${
+                    voice === v.id
+                      ? 'bg-teal-500/20 border-teal-400 text-teal-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400'
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setVoice(v.id)}
+                    className="flex-1 text-left"
+                  >
+                    <div className="font-bold text-sm text-white">{v.label}</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handlePreviewVoice(v.sampleText)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-teal-300 text-xs font-semibold hover:bg-slate-700"
+                  >
+                    <Volume2 className="h-4 w-4" />
+                    <span>Preview</span>
+                  </button>
                 </div>
               ))}
             </div>
-
-            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
-              <input
-                type="text"
-                placeholder="Contact Name & Relationship"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && e.target.value.trim()) {
-                    setContacts([...contacts, { id: Date.now().toString(), name: e.target.value, relationship: 'Support', phone: '555-0100' }]);
-                    e.target.value = '';
-                  }
-                }}
-                className="w-full py-2 px-3 rounded-lg bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-teal-400"
-              />
-              <span className="text-[10px] text-slate-500">Press Enter to add contact</span>
-            </div>
           </div>
         )}
 
-        {/* Step 4: Personal Triggers & Coping Strategies */}
+        {/* STEP 4: Emergency Contact (Optional) */}
         {step === 4 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-white">Triggers & Coping Preferences</h3>
+            <h3 className="text-lg font-bold text-white font-display">Step 4: Emergency Contact</h3>
+            <p className="text-xs text-slate-400">Optional: Add a trusted family member or counselor for 1-tap SOS contact.</p>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Known Personal Triggers
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {TRIGGER_OPTIONS.map((t) => {
-                  const selected = triggers.includes(t);
-                  return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => toggleArrayItem(triggers, setTriggers, t)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                        selected
-                          ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      {selected ? '✓ ' : '+ '}{t}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Preferred Coping Tools
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {COPING_OPTIONS.map((c) => {
-                  const selected = coping.includes(c);
-                  return (
-                    <button
-                      key={c}
-                      type="button"
-                      onClick={() => toggleArrayItem(coping, setCoping, c)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
-                        selected
-                          ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                      }`}
-                    >
-                      {selected ? '✓ ' : '+ '}{c}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="space-y-3">
+              <input
+                type="text"
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                placeholder="Contact Name (e.g. Priya Sharma)"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400"
+              />
+              <input
+                type="tel"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="Phone Number (e.g. 9876543210)"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400 font-mono"
+              />
+              <input
+                type="text"
+                value={contactRel}
+                onChange={(e) => setContactRel(e.target.value)}
+                placeholder="Relationship (e.g. Spouse / Sister / Counselor)"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400"
+              />
             </div>
           </div>
         )}
 
-        {/* Step 5: Voice & Notifications */}
+        {/* STEP 5: Recovery Goal */}
         {step === 5 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-white">AI Voice & Notification Preferences</h3>
+            <h3 className="text-lg font-bold text-white font-display">Step 5: Primary Goal</h3>
+            <p className="text-xs text-slate-400">Select what you would like to focus on first.</p>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Preferred AI Voice Persona
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'calm_female', label: 'Calm Female' },
-                  { id: 'encouraging_male', label: 'Encouraging Male' },
-                  { id: 'gentle_neutral', label: 'Gentle Neutral' }
-                ].map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => setVoice(v.id)}
-                    className={`p-3 rounded-xl border text-xs font-semibold text-center transition-all ${
-                      voice === v.id
-                        ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                        : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
-                    }`}
-                  >
-                    {v.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
-                Notification Alerts
-              </label>
-              <div className="space-y-2">
-                <label className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 cursor-pointer">
-                  <span>Daily Morning Recovery Check-in</span>
-                  <input
-                    type="checkbox"
-                    checked={notifications.dailyCheckin}
-                    onChange={(e) => setNotifications({ ...notifications, dailyCheckin: e.target.checked })}
-                    className="accent-teal-400"
-                  />
-                </label>
-                <label className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 cursor-pointer">
-                  <span>High Craving Risk Warning Notifications</span>
-                  <input
-                    type="checkbox"
-                    checked={notifications.cravingAlerts}
-                    onChange={(e) => setNotifications({ ...notifications, cravingAlerts: e.target.checked })}
-                    className="accent-teal-400"
-                  />
-                </label>
-              </div>
+            <div className="space-y-2">
+              {GOALS.map((g) => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => setGoal(g)}
+                  className={`w-full p-3.5 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all ${
+                    goal === g
+                      ? 'bg-teal-500/20 border-teal-400 text-teal-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                  }`}
+                >
+                  <span>{g}</span>
+                  {goal === g && <Check className="h-4 w-4 text-teal-400" />}
+                </button>
+              ))}
             </div>
           </div>
         )}
@@ -335,7 +254,7 @@ export function OnboardingWizard({ onComplete }) {
               className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 font-black text-xs shadow-lg shadow-teal-500/30 hover:brightness-110 flex items-center gap-1.5"
             >
               <Check className="h-4 w-4 stroke-[3]" />
-              <span>Complete Setup & Launch Beacon</span>
+              <span>Launch Companion</span>
             </button>
           )}
         </div>
