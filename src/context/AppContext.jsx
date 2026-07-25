@@ -165,6 +165,7 @@ export function AppProvider({ children }) {
     const prof = AuthService.getUserProfile();
     setUserProfile(prof);
     setRoleState(prof.role);
+    StorageService.setRole(prof.role);
     setStreakDaysState(StorageService.getStreakDays());
     setCravingLogs(StorageService.getCravingLogs());
   };
@@ -174,6 +175,7 @@ export function AppProvider({ children }) {
     setSession(sess);
     setUserProfile(prof);
     setRoleState(prof.role);
+    StorageService.setRole(prof.role);
     setShowOnboarding(true);
     setStreakDaysState(StorageService.getStreakDays());
     setCravingLogs(StorageService.getCravingLogs());
@@ -183,6 +185,8 @@ export function AppProvider({ children }) {
     const { session: sess, profile: prof } = AuthService.loginAsGuest();
     setSession(sess);
     setUserProfile(prof);
+    setRoleState(prof.role);
+    StorageService.setRole(prof.role);
     setStreakDaysState(StorageService.getStreakDays());
     setCravingLogs(StorageService.getCravingLogs());
   };
@@ -191,6 +195,8 @@ export function AppProvider({ children }) {
     const { session: sess, profile: prof } = AuthService.enableDemoMode();
     setSession(sess);
     setUserProfile(prof);
+    setRoleState(prof.role);
+    StorageService.setRole(prof.role);
     setStreakDaysState(StorageService.getStreakDays());
     setCravingLogs(StorageService.getCravingLogs());
   };
@@ -204,12 +210,18 @@ export function AppProvider({ children }) {
   const updateProfile = (data) => {
     const updated = AuthService.saveUserProfile(data);
     setUserProfile(updated);
+    if (updated.role) {
+      setRoleState(updated.role);
+      StorageService.setRole(updated.role);
+    }
   };
 
   const logout = () => {
     AuthService.logout();
     setSession({ isLoggedIn: false, isGuest: false });
     setUserProfile(CLEAN_SLATE_PROFILE);
+    setRoleState('individual');
+    StorageService.setRole('individual');
     setStreakDaysState(0);
     setCravingLogs([]);
     setShowOnboarding(false);

@@ -38,7 +38,12 @@ export const AuthService = {
   getCurrentSession() {
     try {
       const data = localStorage.getItem(AUTH_KEYS.USER_SESSION);
-      return data ? JSON.parse(data) : { isLoggedIn: false, isGuest: false };
+      if (!data) return { isLoggedIn: false, isGuest: false };
+      const parsed = JSON.parse(data);
+      if (parsed.email) {
+        parsed.email = parsed.email.toLowerCase().trim();
+      }
+      return parsed;
     } catch {
       return { isLoggedIn: false, isGuest: false };
     }
@@ -47,7 +52,8 @@ export const AuthService = {
   getUserProfile() {
     try {
       const session = this.getCurrentSession();
-      const profileKey = session.email ? `${AUTH_KEYS.USER_PROFILE}_${session.email}` : AUTH_KEYS.USER_PROFILE;
+      const emailKey = session.email ? session.email.toLowerCase().trim() : '';
+      const profileKey = emailKey ? `${AUTH_KEYS.USER_PROFILE}_${emailKey}` : AUTH_KEYS.USER_PROFILE;
       const data = localStorage.getItem(profileKey);
       return data ? JSON.parse(data) : CLEAN_SLATE_PROFILE;
     } catch {
@@ -57,8 +63,12 @@ export const AuthService = {
 
   saveUserProfile(profile) {
     const session = this.getCurrentSession();
-    const profileKey = session.email ? `${AUTH_KEYS.USER_PROFILE}_${session.email}` : AUTH_KEYS.USER_PROFILE;
+    const emailKey = session.email ? session.email.toLowerCase().trim() : '';
+    const profileKey = emailKey ? `${AUTH_KEYS.USER_PROFILE}_${emailKey}` : AUTH_KEYS.USER_PROFILE;
     const updated = { ...this.getUserProfile(), ...profile };
+    if (updated.email) {
+      updated.email = updated.email.toLowerCase().trim();
+    }
     localStorage.setItem(profileKey, JSON.stringify(updated));
     return updated;
   },
@@ -73,23 +83,27 @@ export const AuthService = {
   },
 
   login(email, password) {
-    const session = { isLoggedIn: true, isGuest: false, email };
+    const emailLower = email.toLowerCase().trim();
+    const session = { isLoggedIn: true, isGuest: false, email: emailLower };
     localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
     
-    const profileKey = `${AUTH_KEYS.USER_PROFILE}_${email}`;
+    const profileKey = `${AUTH_KEYS.USER_PROFILE}_${emailLower}`;
     const existing = localStorage.getItem(profileKey);
     if (!existing) {
-      const profile = { ...CLEAN_SLATE_PROFILE, email, name: email.split('@')[0] };
+      const profile = { ...CLEAN_SLATE_PROFILE, email: emailLower, name: emailLower.split('@')[0] };
       localStorage.setItem(profileKey, JSON.stringify(profile));
     }
     return session;
   },
 
   signup(name, email, password, role) {
-    const session = { isLoggedIn: true, isGuest: false, email };
+    const emailLower = email.toLowerCase().trim();
+    const session = { isLoggedIn: true, isGuest: false, email: emailLower };
     localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
-    const profile = { ...CLEAN_SLATE_PROFILE, email, name, role: role || 'individual' };
-    this.saveUserProfile(profile);
+    const profile = { ...CLEAN_SLATE_PROFILE, email: emailLower, name, role: role || 'individual' };
+    
+    const profileKey = `${AUTH_KEYS.USER_PROFILE}_${emailLower}`;
+    localStorage.setItem(profileKey, JSON.stringify(profile));
     return { session, profile };
   },
 
