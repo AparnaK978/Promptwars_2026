@@ -164,6 +164,7 @@ export function AppProvider({ children }) {
     setSession(sess);
     const prof = AuthService.getUserProfile();
     setUserProfile(prof);
+    setRoleState(prof.role);
     setStreakDaysState(StorageService.getStreakDays());
     setCravingLogs(StorageService.getCravingLogs());
   };

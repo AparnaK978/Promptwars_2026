@@ -75,8 +75,13 @@ export const AuthService = {
   login(email, password) {
     const session = { isLoggedIn: true, isGuest: false, email };
     localStorage.setItem(AUTH_KEYS.USER_SESSION, JSON.stringify(session));
-    const profile = { ...CLEAN_SLATE_PROFILE, email, name: email.split('@')[0] };
-    this.saveUserProfile(profile);
+    
+    const profileKey = `${AUTH_KEYS.USER_PROFILE}_${email}`;
+    const existing = localStorage.getItem(profileKey);
+    if (!existing) {
+      const profile = { ...CLEAN_SLATE_PROFILE, email, name: email.split('@')[0] };
+      localStorage.setItem(profileKey, JSON.stringify(profile));
+    }
     return session;
   },
 
