@@ -1,95 +1,75 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --font-primary: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --bg-primary: #FAF8F5; /* Warm off-white */
+  --bg-card: #FFFFFF;
   
-  --bg-neutral: #f8fafc; /* Slate 50 */
-  --bg-card: #ffffff;
-  --text-main: #0f172a; /* Slate 900 */
-  --text-muted: #475569; /* Slate 600 */
-  --primary-teal: #0ea5e9;
-  --primary-cyan: #0d9488;
-  --emergency-rose: #e11d48;
-  --emergency-amber: #ea580c;
-  --border-light: #e2e8f0;
+  --primary-color: #4F7C82; /* Muted calm teal-blue */
+  --secondary-color: #A7C4A0; /* Light sage green */
+  --accent-color: #E8C07D; /* Warm golden sand */
+  --danger-color: #D65A5A; /* Soft emergency rose */
+  
+  --text-primary: #243746; /* Dark slate blue */
+  --text-muted: #6B7280;
+  
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
   margin: 0;
   padding: 0;
 }
 
-body {
-  font-family: var(--font-primary);
-  background-color: var(--bg-neutral);
-  color: var(--text-main);
-  min-height: 100vh;
-  overflow-x: hidden;
-  line-height: 1.6;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  color: #0f172a;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #0d9488;
+h1, h2, h3, h4, h5, h6, .font-serif {
+  font-family: var(--font-serif);
+  color: var(--text-primary);
 }
 
 /* Premium Healthcare Visual System */
 .healthcare-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg-card);
+  border: 1px solid #E5E7EB;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 15px -3px rgba(36, 55, 70, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .healthcare-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(36, 55, 70, 0.06);
 }
 
-.emergency-accent-card {
-  background: #fdf2f2;
-  border: 1px solid #fecaca;
-  border-radius: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.03);
+.accent-sage {
+  background-color: #F4F7F5;
+  border-color: #A7C4A0;
+  color: #3b5d43;
 }
 
-/* Micro-animations */
-@keyframes soft-pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
-  }
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 0 30px rgba(13, 148, 136, 0.4);
-  }
+.accent-blue {
+  background-color: #F0F5F6;
+  border-color: #4F7C82;
+  color: #2F4D51;
 }
 
-.animate-voice-pulse {
-  animation: soft-pulse 3s ease-in-out infinite;
+.accent-amber {
+  background-color: #FFFDF9;
+  border-color: #E8C07D;
+  color: #926E2D;
 }
 
-/* Focus styles for WCAG accessibility */
+.accent-rose {
+  background-color: #FDF6F6;
+  border-color: #D65A5A;
+  color: #8C3636;
+}
+
+/* Accessible interactive controls */
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid #0d9488;
+  outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
