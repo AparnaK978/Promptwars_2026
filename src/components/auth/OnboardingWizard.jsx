@@ -21,10 +21,38 @@ export function OnboardingWizard({ onComplete }) {
     { id: 'calm_male', label: 'Calm Male Voice', sampleText: 'Welcome. Take a deep breath with me, you are safe here.' },
     { id: 'neutral', label: 'Neutral Voice', sampleText: 'Grounding protocol ready whenever you feel an urge.' }
   ];
-  const GOALS = ['Reduce cravings', 'Stay sober', 'Support loved one', 'Learn about recovery'];
+
+  const handleRoleSelect = (selectedRole) => {
+    setRoleState(selectedRole);
+    if (selectedRole === 'caregiver') {
+      setGoal('Support loved one');
+    } else {
+      setGoal('Reduce cravings');
+    }
+  };
+
+  const activeGoals = role === 'caregiver'
+    ? ['Support loved one', 'Learn about recovery']
+    : ['Reduce cravings', 'Stay sober', 'Learn about recovery'];
+
+  // Dynamic Navigation to skip Emergency Contact for Caregivers
+  const handleNext = () => {
+    if (step === 3 && role === 'caregiver') {
+      setStep(5);
+    } else {
+      setStep(step + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (step === 5 && role === 'caregiver') {
+      setStep(3);
+    } else {
+      setStep(step - 1);
+    }
+  };
 
   const handlePreviewVoice = (sampleText) => {
-    // Determine target code dynamically for voice preview
     speakText(sampleText);
   };
 
@@ -33,7 +61,7 @@ export function OnboardingWizard({ onComplete }) {
       role,
       language,
       preferredVoice: voice,
-      emergencyContact: { name: contactName, phone: contactPhone, relationship: contactRel },
+      emergencyContact: role === 'caregiver' ? { name: '', phone: '', relationship: '' } : { name: contactName, phone: contactPhone, relationship: contactRel },
       goal,
       isDemo: false
     };
@@ -43,6 +71,10 @@ export function OnboardingWizard({ onComplete }) {
     if (onComplete) onComplete();
   };
 
+  // Human readable step indicators
+  const totalSteps = role === 'caregiver' ? 4 : 5;
+  const displayStep = (step === 5 && role === 'caregiver') ? 4 : step;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn text-[#243746]">
       <div className="bg-white rounded-3xl w-full max-w-lg p-6 sm:p-8 relative border border-slate-100 shadow-2xl">
@@ -50,15 +82,15 @@ export function OnboardingWizard({ onComplete }) {
         {/* Step Indicator */}
         <div className="flex items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#4F7C82]">Step {step} of 5</span>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#4F7C82]">Step {displayStep} of {totalSteps}</span>
             <h2 className="text-xl font-bold text-slate-900 font-display">Personalize Companion</h2>
           </div>
           <div className="flex items-center gap-1.5">
-            {[1, 2, 3, 4, 5].map((s) => (
+            {Array.from({ length: totalSteps }).map((_, idx) => (
               <div
-                key={s}
+                key={idx}
                 className={`h-2 w-6 rounded-full transition-colors ${
-                  s <= step ? 'bg-[#4F7C82]' : 'bg-slate-100'
+                  (idx + 1) <= displayStep ? 'bg-[#4F7C82]' : 'bg-slate-100'
                 }`}
               />
             ))}
@@ -74,7 +106,7 @@ export function OnboardingWizard({ onComplete }) {
             <div className="space-y-3">
               <button
                 type="button"
-                onClick={() => setRoleState('individual')}
+                onClick={() => handleRoleSelect('individual')}
                 className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
                   role === 'individual'
                     ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51] font-medium'
@@ -90,7 +122,7 @@ export function OnboardingWizard({ onComplete }) {
 
               <button
                 type="button"
-                onClick={() => setRoleState('caregiver')}
+                onClick={() => handleRoleSelect('caregiver')}
                 className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
                   role === 'caregiver'
                     ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51] font-medium'
@@ -171,8 +203,8 @@ export function OnboardingWizard({ onComplete }) {
           </div>
         )}
 
-        {/* STEP 4: Emergency Contacts */}
-        {step === 4 && (
+        {/* STEP 4: Emergency Contacts (Skipped for Caregivers) */}
+        {step === 4 && role !== 'caregiver' && (
           <div className="space-y-4 animate-fadeIn">
             <h3 className="text-base font-bold text-slate-900 font-display">Step 4: Emergency Contact</h3>
             <p className="text-xs text-slate-500">Add details for a trusted family member or counselor for 1-tap SOS dialing.</p>
@@ -206,11 +238,11 @@ export function OnboardingWizard({ onComplete }) {
         {/* STEP 5: Goals */}
         {step === 5 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-slate-900 font-display">Step 5: Recovery Goal</h3>
+            <h3 className="text-base font-bold text-slate-900 font-display">Step {totalSteps}: Recovery Goal</h3>
             <p className="text-xs text-slate-500">Choose your current recovery focal area.</p>
 
             <div className="space-y-2">
-              {GOALS.map((g) => (
+              {activeGoals.map((g) => (
                 <button
                   key={g}
                   type="button"
@@ -233,7 +265,7 @@ export function OnboardingWizard({ onComplete }) {
         <div className="flex items-center justify-between gap-3 mt-6 pt-4 border-t border-slate-100">
           <button
             type="button"
-            onClick={() => setStep(Math.max(1, step - 1))}
+            onClick={handlePrev}
             disabled={step === 1}
             className="px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-250 disabled:opacity-40 text-xs font-semibold flex items-center gap-1 cursor-pointer"
           >
@@ -243,7 +275,7 @@ export function OnboardingWizard({ onComplete }) {
           {step < 5 ? (
             <button
               type="button"
-              onClick={() => setStep(step + 1)}
+              onClick={handleNext}
               className="px-5 py-2.5 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm flex items-center gap-1 cursor-pointer"
             >
               <span>Next</span> <ChevronRight className="h-4 w-4" />
