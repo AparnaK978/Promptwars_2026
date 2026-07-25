@@ -27,17 +27,56 @@ export function AppProvider({ children }) {
   };
 
   // Browser Speech Synthesis Engine voice selection mapping
-  const getSelectedVoice = () => {
+  const getSelectedVoice = (targetLang, prefVoice) => {
     if (!('speechSynthesis' in window)) return null;
     const voices = window.speechSynthesis.getVoices();
-    const pref = userProfile.preferredVoice || 'calm_female';
+    const pref = prefVoice || userProfile.preferredVoice || 'calm_female';
+    const lang = targetLang || userProfile.language || 'English';
 
-    if (pref === 'calm_female') {
-      return voices.find(v => v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google US English')) || voices[0];
-    } else if (pref === 'calm_male') {
-      return voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google UK English Male')) || voices[0];
+    // Map language names to browser BCP-47 prefixes
+    const prefixes = {
+      English: 'en',
+      Hindi: 'hi',
+      Malayalam: 'ml',
+      Tamil: 'ta',
+      Kannada: 'kn',
+      Telugu: 'te'
+    };
+    const prefix = prefixes[lang] || 'en';
+
+    // 1st pass: filter voices by matching language code prefix
+    let langVoices = voices.filter(v => v.lang.toLowerCase().startsWith(prefix));
+
+    // 2nd pass fallback: if no specific language voice is installed, fallback to general English
+    if (langVoices.length === 0) {
+      langVoices = voices.filter(v => v.lang.toLowerCase().startsWith('en'));
     }
-    return voices.find(v => v.name.includes('Natural') || v.name.includes('Google')) || voices[0];
+
+    // Default fallback to all voices
+    if (langVoices.length === 0) {
+      langVoices = voices;
+    }
+
+    // Match preferred gender within the matching voice list
+    if (pref === 'calm_female') {
+      const match = langVoices.find(v => 
+        v.name.toLowerCase().includes('female') || 
+        v.name.toLowerCase().includes('zira') || 
+        v.name.toLowerCase().includes('sangeeta') || 
+        v.name.toLowerCase().includes('harpreet') ||
+        v.name.toLowerCase().includes('heera')
+      );
+      if (match) return match;
+    } else if (pref === 'calm_male') {
+      const match = langVoices.find(v => 
+        v.name.toLowerCase().includes('male') || 
+        v.name.toLowerCase().includes('david') || 
+        v.name.toLowerCase().includes('ravi')
+      );
+      if (match) return match;
+    }
+
+    return langVoices[0] || null;
   };
 
   const speakText = (text) => {
@@ -48,7 +87,18 @@ export function AppProvider({ children }) {
       const cleanText = text.replace(/[*_#`]/g, '');
       const utterance = new SpeechSynthesisUtterance(cleanText);
       
-      const matchedVoice = getSelectedVoice();
+      const userLang = userProfile.language || 'English';
+      const langCodes = {
+        English: 'en-IN',
+        Hindi: 'hi-IN',
+        Malayalam: 'ml-IN',
+        Tamil: 'ta-IN',
+        Kannada: 'kn-IN',
+        Telugu: 'te-IN'
+      };
+      utterance.lang = langCodes[userLang] || 'en-US';
+
+      const matchedVoice = getSelectedVoice(userLang, userProfile.preferredVoice);
       if (matchedVoice) {
         utterance.voice = matchedVoice;
       }

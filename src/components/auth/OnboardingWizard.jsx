@@ -6,7 +6,7 @@ export function OnboardingWizard({ onComplete }) {
   const { userProfile, completeOnboarding, setRole, speakText } = useApp();
   const [step, setStep] = useState(1);
 
-  // 1-Question-Per-Step State
+  // Onboarding Options
   const [role, setRoleState] = useState(userProfile.role || 'individual');
   const [language, setLanguage] = useState(userProfile.language || 'English');
   const [voice, setVoice] = useState(userProfile.preferredVoice || 'calm_female');
@@ -17,13 +17,14 @@ export function OnboardingWizard({ onComplete }) {
 
   const LANGUAGES = ['English', 'Hindi', 'Malayalam', 'Tamil', 'Kannada', 'Telugu'];
   const VOICES = [
-    { id: 'calm_female', label: 'Calm Female', sampleText: 'Hello, I am Beacon AI. I am here to support your recovery journey.' },
-    { id: 'calm_male', label: 'Calm Male', sampleText: 'Welcome. Take a deep breath with me, you are safe here.' },
+    { id: 'calm_female', label: 'Calm Female Voice', sampleText: 'Hello, I am Beacon AI. I am here to support your recovery journey.' },
+    { id: 'calm_male', label: 'Calm Male Voice', sampleText: 'Welcome. Take a deep breath with me, you are safe here.' },
     { id: 'neutral', label: 'Neutral Voice', sampleText: 'Grounding protocol ready whenever you feel an urge.' }
   ];
   const GOALS = ['Reduce cravings', 'Stay sober', 'Support loved one', 'Learn about recovery'];
 
   const handlePreviewVoice = (sampleText) => {
+    // Determine target code dynamically for voice preview
     speakText(sampleText);
   };
 
@@ -43,74 +44,74 @@ export function OnboardingWizard({ onComplete }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fadeIn">
-      <div className="glass-panel w-full max-w-lg p-6 sm:p-8 relative border border-slate-700 shadow-2xl bg-slate-950">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn text-[#243746]">
+      <div className="bg-white rounded-3xl w-full max-w-lg p-6 sm:p-8 relative border border-slate-100 shadow-2xl">
         
         {/* Step Indicator */}
-        <div className="flex items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-teal-400">Step {step} of 5</span>
-            <h2 className="text-xl font-bold text-white font-display">Personalize Companion</h2>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#4F7C82]">Step {step} of 5</span>
+            <h2 className="text-xl font-bold text-slate-900 font-display">Personalize Companion</h2>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {[1, 2, 3, 4, 5].map((s) => (
               <div
                 key={s}
                 className={`h-2 w-6 rounded-full transition-colors ${
-                  s <= step ? 'bg-teal-400' : 'bg-slate-800'
+                  s <= step ? 'bg-[#4F7C82]' : 'bg-slate-100'
                 }`}
               />
             ))}
           </div>
         </div>
 
-        {/* STEP 1: Who are you? */}
+        {/* STEP 1: Recovery Role */}
         {step === 1 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-lg font-bold text-white font-display">Step 1: Who are you?</h3>
-            <p className="text-xs text-slate-400">Select how Beacon AI should tailor your companion experience.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">Step 1: Choose Your Role</h3>
+            <p className="text-xs text-slate-500">Select how Beacon AI should focus your recovery companion workspace.</p>
             
             <div className="space-y-3">
               <button
                 type="button"
                 onClick={() => setRoleState('individual')}
-                className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 ${
+                className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
                   role === 'individual'
-                    ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                    ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51] font-medium'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                 }`}
               >
-                <User className="h-6 w-6 text-teal-400 shrink-0" />
+                <User className="h-6 w-6 text-[#4F7C82] shrink-0" />
                 <div>
-                  <div className="font-bold text-sm text-white">Recovering Individual</div>
-                  <div className="text-xs text-slate-400 mt-0.5">Urge surfing, voice journals, and zero-typing crisis support.</div>
+                  <div className="font-bold text-xs text-slate-900">Individual Recovery Companion</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">Focuses on urge surfing, daily check-ins, and grounding techniques.</div>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setRoleState('caregiver')}
-                className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 ${
+                className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
                   role === 'caregiver'
-                    ? 'bg-purple-600/20 border-purple-400 text-purple-200'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                    ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51] font-medium'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                 }`}
               >
-                <Users className="h-6 w-6 text-purple-400 shrink-0" />
+                <Users className="h-6 w-6 text-[#4F7C82] shrink-0" />
                 <div>
-                  <div className="font-bold text-sm text-white">Caregiver / Loved One</div>
-                  <div className="text-xs text-slate-400 mt-0.5">De-escalation scripts, family support, and 112/108 guides.</div>
+                  <div className="font-bold text-xs text-slate-900">Caregiver Support Hub</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">Focuses on de-escalation guidelines, Naloxone protocols, and resources.</div>
                 </div>
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 2: Preferred Language */}
+        {/* STEP 2: Language Preference */}
         {step === 2 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-lg font-bold text-white font-display">Step 2: Preferred Language</h3>
-            <p className="text-xs text-slate-400">Select your preferred language for prompts and resources.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">Step 2: Preferred Language</h3>
+            <p className="text-xs text-slate-500">Select your preferred language. Spoken audio will match this accent where supported.</p>
 
             <div className="grid grid-cols-2 gap-2.5">
               {LANGUAGES.map((lang) => (
@@ -118,25 +119,25 @@ export function OnboardingWizard({ onComplete }) {
                   key={lang}
                   type="button"
                   onClick={() => setLanguage(lang)}
-                  className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all ${
+                  className={`p-3.5 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
                     language === lang
-                      ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51]'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
                   <span>{lang}</span>
-                  {language === lang && <Check className="h-4 w-4 text-teal-400" />}
+                  {language === lang && <Check className="h-4 w-4 text-[#4F7C82] stroke-[2.5]" />}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* STEP 3: Preferred Voice Persona */}
+        {/* STEP 3: Speech Voice Persona */}
         {step === 3 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-lg font-bold text-white font-display">Step 3: Preferred Voice</h3>
-            <p className="text-xs text-slate-400">Listen to audio previews and choose your preferred AI companion voice.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">Step 3: AI Companion Voice</h3>
+            <p className="text-xs text-slate-500">Listen to audio previews and choose your preferred companion voice.</p>
 
             <div className="space-y-2.5">
               {VOICES.map((v) => (
@@ -144,24 +145,24 @@ export function OnboardingWizard({ onComplete }) {
                   key={v.id}
                   className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 transition-all ${
                     voice === v.id
-                      ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                      : 'bg-slate-900 border-slate-800 text-slate-400'
+                      ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51]'
+                      : 'bg-slate-50 border-slate-200 text-slate-600'
                   }`}
                 >
                   <button
                     type="button"
                     onClick={() => setVoice(v.id)}
-                    className="flex-1 text-left"
+                    className="flex-1 text-left cursor-pointer"
                   >
-                    <div className="font-bold text-sm text-white">{v.label}</div>
+                    <div className="font-bold text-xs text-slate-900">{v.label}</div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handlePreviewVoice(v.sampleText)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 text-teal-300 text-xs font-semibold hover:bg-slate-700"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-[#4F7C82] text-[10px] font-bold hover:bg-slate-100 cursor-pointer"
                   >
-                    <Volume2 className="h-4 w-4" />
+                    <Volume2 className="h-3.5 w-3.5" />
                     <span>Preview</span>
                   </button>
                 </div>
@@ -170,11 +171,11 @@ export function OnboardingWizard({ onComplete }) {
           </div>
         )}
 
-        {/* STEP 4: Emergency Contact (Optional) */}
+        {/* STEP 4: Emergency Contacts */}
         {step === 4 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-lg font-bold text-white font-display">Step 4: Emergency Contact</h3>
-            <p className="text-xs text-slate-400">Optional: Add a trusted family member or counselor for 1-tap SOS contact.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">Step 4: Emergency Contact</h3>
+            <p className="text-xs text-slate-500">Add details for a trusted family member or counselor for 1-tap SOS dialing.</p>
 
             <div className="space-y-3">
               <input
@@ -182,31 +183,31 @@ export function OnboardingWizard({ onComplete }) {
                 value={contactName}
                 onChange={(e) => setContactName(e.target.value)}
                 placeholder="Contact Name (e.g. Priya Sharma)"
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-[#4F7C82]"
               />
               <input
                 type="tel"
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
                 placeholder="Phone Number (e.g. 9876543210)"
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400 font-mono"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-[#4F7C82] font-mono"
               />
               <input
                 type="text"
                 value={contactRel}
                 onChange={(e) => setContactRel(e.target.value)}
-                placeholder="Relationship (e.g. Spouse / Sister / Counselor)"
-                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400"
+                placeholder="Relationship (e.g. Spouse / Sister / Support Worker)"
+                className="w-full py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-[#4F7C82]"
               />
             </div>
           </div>
         )}
 
-        {/* STEP 5: Recovery Goal */}
+        {/* STEP 5: Goals */}
         {step === 5 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-lg font-bold text-white font-display">Step 5: Primary Goal</h3>
-            <p className="text-xs text-slate-400">Select what you would like to focus on first.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">Step 5: Recovery Goal</h3>
+            <p className="text-xs text-slate-500">Choose your current recovery focal area.</p>
 
             <div className="space-y-2">
               {GOALS.map((g) => (
@@ -214,27 +215,27 @@ export function OnboardingWizard({ onComplete }) {
                   key={g}
                   type="button"
                   onClick={() => setGoal(g)}
-                  className={`w-full p-3.5 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all ${
+                  className={`w-full p-3.5 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
                     goal === g
-                      ? 'bg-teal-500/20 border-teal-400 text-teal-300'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                      ? 'bg-[#F0F5F6] border-[#4F7C82] text-[#2F4D51]'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
                   }`}
                 >
                   <span>{g}</span>
-                  {goal === g && <Check className="h-4 w-4 text-teal-400" />}
+                  {goal === g && <Check className="h-4 w-4 text-[#4F7C82] stroke-[2.5]" />}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* Wizard Controls */}
-        <div className="flex items-center justify-between gap-3 mt-6 pt-4 border-t border-slate-800">
+        {/* Wizard Navigation Controls */}
+        <div className="flex items-center justify-between gap-3 mt-6 pt-4 border-t border-slate-100">
           <button
             type="button"
             onClick={() => setStep(Math.max(1, step - 1))}
             disabled={step === 1}
-            className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white disabled:opacity-40 text-xs font-semibold flex items-center gap-1"
+            className="px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-250 disabled:opacity-40 text-xs font-semibold flex items-center gap-1 cursor-pointer"
           >
             <ChevronLeft className="h-4 w-4" /> Previous
           </button>
@@ -243,7 +244,7 @@ export function OnboardingWizard({ onComplete }) {
             <button
               type="button"
               onClick={() => setStep(step + 1)}
-              className="px-5 py-2 rounded-xl bg-teal-500 text-slate-950 font-extrabold text-xs shadow-md shadow-teal-500/30 hover:bg-teal-400 flex items-center gap-1"
+              className="px-5 py-2.5 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm flex items-center gap-1 cursor-pointer"
             >
               <span>Next</span> <ChevronRight className="h-4 w-4" />
             </button>
@@ -251,10 +252,10 @@ export function OnboardingWizard({ onComplete }) {
             <button
               type="button"
               onClick={handleFinish}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 font-black text-xs shadow-lg shadow-teal-500/30 hover:brightness-110 flex items-center gap-1.5"
+              className="px-6 py-2.5 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm flex items-center gap-1 cursor-pointer"
             >
               <Check className="h-4 w-4 stroke-[3]" />
-              <span>Launch Companion</span>
+              <span>Complete Setup</span>
             </button>
           )}
         </div>

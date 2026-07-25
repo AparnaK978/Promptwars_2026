@@ -25,30 +25,32 @@ export function Navbar() {
         </div>
 
         {/* Dual Role Toggle */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-          <button
-            onClick={() => setRole('individual')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              role === 'individual'
-                ? 'bg-teal-600 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <User className="h-3.5 w-3.5" />
-            <span>{role === 'individual' ? 'Individual' : 'Individual'}</span>
-          </button>
-          <button
-            onClick={() => setRole('caregiver')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              role === 'caregiver'
-                ? 'bg-purple-600 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            <Users className="h-3.5 w-3.5" />
-            <span>Caregiver</span>
-          </button>
-        </div>
+        {userProfile?.isDemo && (
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button
+              onClick={() => setRole('individual')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                role === 'individual'
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <User className="h-3.5 w-3.5" />
+              <span>Individual</span>
+            </button>
+            <button
+              onClick={() => setRole('caregiver')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                role === 'caregiver'
+                  ? 'bg-purple-600 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Users className="h-3.5 w-3.5" />
+              <span>Caregiver</span>
+            </button>
+          </div>
+        )}
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
