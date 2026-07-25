@@ -27,6 +27,12 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState('home'); // 'home' | 'recovery' | 'ai' | 'resources' | 'profile'
   const [showAuthGate, setShowAuthGate] = useState(false);
 
+  React.useEffect(() => {
+    if (!session.isLoggedIn) {
+      setShowAuthGate(false);
+    }
+  }, [session.isLoggedIn]);
+
   // If user is not logged in, show Landing Page
   if (!session.isLoggedIn) {
     if (showAuthGate) {

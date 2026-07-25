@@ -1,9 +1,9 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext';
+import { getTranslation } from '../../services/i18n';
 import { Shield, Volume2, Users, HeartHandshake, HelpCircle, PhoneCall, Sparkles, ArrowRight, BookOpen, Clock, Heart, ShieldCheck, Check } from 'lucide-react';
 
 export function LandingPage({ onStart, onStartCaregiver, onStartDemo }) {
-  const { t } = useApp();
+  const t = (key) => getTranslation('English', key);
 
   const FEATURES = [
     {
