@@ -55,14 +55,47 @@ Beacon AI implements a multi-tier clinical safety and AI inference pipeline desi
               └──────────────────────┘
 ```
 
-### Pipeline Breakdown:
-1. **Multi-Modal Input**: Captures Web Speech API audio transcripts, visual card selections, or camera image uploads.
-2. **Context Builder**: Assembles active role (`individual` / `caregiver`), recovery streak, known triggers, and user goals.
-3. **Risk Assessment Engine**: Evaluates recent urge frequency and engagement to compute a **Recovery Score (0-100)** and risk rating.
-4. **Clinical Safety Guard**: Performs deterministic regex & semantic intercept for self-harm or fatal overdose indicators.
-5. **Gemini LLM Inference**: Sends enriched prompt to `gemini-1.5-flash` using persona system prompts.
-6. **Multi-Modal Response & Speech Synthesis**: Delivers concise advice with automated Text-to-Speech audio output.
-7. **Emergency Override**: Bypasses LLM generation if immediate danger is detected, launching 988 direct dial and Naloxone CPR guide.
+---
+
+## 🚀 Deploying to Vercel
+
+### Method 1: Deploy via Vercel Dashboard (Recommended)
+
+1. **Push your code to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Beacon AI Vercel Deployment"
+   git push origin main
+   ```
+
+2. **Import Project into Vercel**:
+   - Go to [Vercel Dashboard](https://vercel.com/new).
+   - Select your GitHub repository (`Promptwars_2026`).
+
+3. **Configure Build Settings**:
+   - **Framework Preset**: `Vite`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+
+4. **Add Environment Variables (Optional)**:
+   - Key: `VITE_GEMINI_API_KEY`
+   - Value: `YOUR_GEMINI_API_KEY`
+
+5. Click **Deploy**. Vercel will build and publish your app live with an SSL URL!
+
+---
+
+### Method 2: Deploy via Vercel CLI
+
+Run the following commands in your project terminal:
+
+```bash
+# 1. Run Vercel CLI
+npx vercel
+
+# 2. Deploy to Production
+npx vercel --prod
+```
 
 ---
 
@@ -74,39 +107,7 @@ Beacon AI implements a multi-tier clinical safety and AI inference pipeline desi
 - **Speech Engine**: Web Speech API (`SpeechRecognition` & `SpeechSynthesis`)
 - **Persistence Layer**: Modular LocalStorage Adapter (`services/auth.js` & `services/storage.js`)
 - **Icons**: Lucide React
-- **Accessibility**: WCAG 2.1 AA Compliant (High-contrast mode, aria-live regions, keyboard navigation)
-
----
-
-## 📦 Quick Start & Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/AparnaK978/Promptwars_2026.git
-   cd Promptwars_2026
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Set up Environment Variables (Optional)**:
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-   ```
-   *(Note: Beacon AI includes an intelligent fallback recovery engine if no API key is provided, ensuring seamless evaluation during hackathon judging).*
-
-4. **Launch Development Server**:
-   ```bash
-   npm run dev
-   ```
-
-5. **Build for Production**:
-   ```bash
-   npm run build
-   ```
+- **Accessibility**: WCAG 2.1 AA Compliant
 
 ---
 
