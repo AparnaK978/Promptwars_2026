@@ -29,6 +29,15 @@ try {
   const malayalamWelcome = getTranslation('Malayalam', 'welcome');
   assert.strictEqual(malayalamWelcome, 'സ്വാഗതം, സുഹൃത്തേ');
 
+  const tamilWelcome = getTranslation('Tamil', 'welcome');
+  assert.strictEqual(tamilWelcome, 'வரவேற்கிறோம், நண்பரே');
+
+  const kannadaWelcome = getTranslation('Kannada', 'welcome');
+  assert.strictEqual(kannadaWelcome, 'ಸ್ವಾಗತ, ಮಿತ್ರರೇ');
+
+  const teluguWelcome = getTranslation('Telugu', 'welcome');
+  assert.strictEqual(teluguWelcome, 'స్వాగతం, మిత్రమా');
+
   const fallback = getTranslation('Telugu', 'non_existent_key');
   assert.strictEqual(fallback, 'non_existent_key');
   console.log("✅ i18n translation tests passed!\n");

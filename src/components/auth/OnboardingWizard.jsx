@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { Shield, User, Users, Volume2, Check, ChevronRight, ChevronLeft, Globe, Phone, Target } from 'lucide-react';
 
 export function OnboardingWizard({ onComplete }) {
-  const { userProfile, completeOnboarding, setRole, speakText } = useApp();
+  const { userProfile, completeOnboarding, setRole, speakText, t } = useApp();
   const [step, setStep] = useState(1);
 
   // Onboarding Options
@@ -17,9 +17,9 @@ export function OnboardingWizard({ onComplete }) {
 
   const LANGUAGES = ['English', 'Hindi', 'Malayalam', 'Tamil', 'Kannada', 'Telugu'];
   const VOICES = [
-    { id: 'calm_female', label: 'Calm Female Voice', sampleText: 'Hello, I am Beacon AI. I am here to support your recovery journey.' },
-    { id: 'calm_male', label: 'Calm Male Voice', sampleText: 'Welcome. Take a deep breath with me, you are safe here.' },
-    { id: 'neutral', label: 'Neutral Voice', sampleText: 'Grounding protocol ready whenever you feel an urge.' }
+    { id: 'calm_female', label: t('voice') + ' (Female)', sampleText: 'Hello, I am Beacon AI. I am here to support your recovery journey.' },
+    { id: 'calm_male', label: t('voice') + ' (Male)', sampleText: 'Welcome. Take a deep breath with me, you are safe here.' },
+    { id: 'neutral', label: t('voice') + ' (Neutral)', sampleText: 'Grounding protocol ready whenever you feel an urge.' }
   ];
 
   const handleRoleSelect = (selectedRole) => {
@@ -32,8 +32,8 @@ export function OnboardingWizard({ onComplete }) {
   };
 
   const activeGoals = role === 'caregiver'
-    ? ['Support loved one', 'Learn about recovery']
-    : ['Reduce cravings', 'Stay sober', 'Learn about recovery'];
+    ? [t('copingStrDesc'), t('recPlansDesc')] // "Support loved one" or "Learn about recovery" resolved via i18n mapping keys if needed
+    : [t('recoveryGoal'), t('activeStreak'), t('recPlansDesc')];
 
   // Dynamic Navigation to skip Emergency Contact for Caregivers
   const handleNext = () => {
@@ -82,8 +82,8 @@ export function OnboardingWizard({ onComplete }) {
         {/* Step Indicator */}
         <div className="flex items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#4F7C82]">Step {displayStep} of {totalSteps}</span>
-            <h2 className="text-xl font-bold text-slate-900 font-display">Personalize Companion</h2>
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#4F7C82]">{t('stepTitle')} {displayStep} {t('of')} {totalSteps}</span>
+            <h2 className="text-xl font-bold text-slate-900 font-display">{t('personalizeCompanion')}</h2>
           </div>
           <div className="flex items-center gap-1.5">
             {Array.from({ length: totalSteps }).map((_, idx) => (
@@ -100,8 +100,8 @@ export function OnboardingWizard({ onComplete }) {
         {/* STEP 1: Recovery Role */}
         {step === 1 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-slate-900 font-display">Step 1: Choose Your Role</h3>
-            <p className="text-xs text-slate-500">Select how Beacon AI should focus your recovery companion workspace.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">{t('stepTitle')} 1: {t('whoAreYou')}</h3>
+            <p className="text-xs text-slate-500">{t('roleSub')}</p>
             
             <div className="space-y-3">
               <button
@@ -115,8 +115,8 @@ export function OnboardingWizard({ onComplete }) {
               >
                 <User className="h-6 w-6 text-[#4F7C82] shrink-0" />
                 <div>
-                  <div className="font-bold text-xs text-slate-900">Individual Recovery Companion</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Focuses on urge surfing, daily check-ins, and grounding techniques.</div>
+                  <div className="font-bold text-xs text-slate-900">{t('individualRole')}</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">{t('individualSub')}</div>
                 </div>
               </button>
 
@@ -131,8 +131,8 @@ export function OnboardingWizard({ onComplete }) {
               >
                 <Users className="h-6 w-6 text-[#4F7C82] shrink-0" />
                 <div>
-                  <div className="font-bold text-xs text-slate-900">Caregiver Support Hub</div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">Focuses on de-escalation guidelines, Naloxone protocols, and resources.</div>
+                  <div className="font-bold text-xs text-slate-900">{t('caregiverRole')}</div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">{t('caregiverSub')}</div>
                 </div>
               </button>
             </div>
@@ -142,8 +142,8 @@ export function OnboardingWizard({ onComplete }) {
         {/* STEP 2: Language Preference */}
         {step === 2 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-slate-900 font-display">Step 2: Preferred Language</h3>
-            <p className="text-xs text-slate-500">Select your preferred language. Spoken audio will match this accent where supported.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">{t('stepTitle')} 2: {t('language')}</h3>
+            <p className="text-xs text-slate-500">{t('langSub')}</p>
 
             <div className="grid grid-cols-2 gap-2.5">
               {LANGUAGES.map((lang) => (
@@ -168,8 +168,8 @@ export function OnboardingWizard({ onComplete }) {
         {/* STEP 3: Speech Voice Persona */}
         {step === 3 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-slate-900 font-display">Step 3: AI Companion Voice</h3>
-            <p className="text-xs text-slate-500">Listen to audio previews and choose your preferred companion voice.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">{t('stepTitle')} 3: {t('voice')}</h3>
+            <p className="text-xs text-slate-500">{t('voiceSub')}</p>
 
             <div className="space-y-2.5">
               {VOICES.map((v) => (
@@ -206,29 +206,29 @@ export function OnboardingWizard({ onComplete }) {
         {/* STEP 4: Emergency Contacts (Skipped for Caregivers) */}
         {step === 4 && role !== 'caregiver' && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-slate-900 font-display">Step 4: Emergency Contact</h3>
-            <p className="text-xs text-slate-500">Add details for a trusted family member or counselor for 1-tap SOS dialing.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">{t('stepTitle')} 4: {t('emergencyContact')}</h3>
+            <p className="text-xs text-slate-500">{t('contactSub')}</p>
 
             <div className="space-y-3">
               <input
                 type="text"
                 value={contactName}
                 onChange={(e) => setContactName(e.target.value)}
-                placeholder="Contact Name (e.g. Priya Sharma)"
+                placeholder={t('contactName')}
                 className="w-full py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-[#4F7C82]"
               />
               <input
                 type="tel"
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="Phone Number (e.g. 9876543210)"
+                placeholder={t('contactPhone')}
                 className="w-full py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-[#4F7C82] font-mono"
               />
               <input
                 type="text"
                 value={contactRel}
                 onChange={(e) => setContactRel(e.target.value)}
-                placeholder="Relationship (e.g. Spouse / Sister / Support Worker)"
+                placeholder={t('contactRel')}
                 className="w-full py-2.5 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-xs focus:outline-none focus:border-[#4F7C82]"
               />
             </div>
@@ -238,8 +238,8 @@ export function OnboardingWizard({ onComplete }) {
         {/* STEP 5: Goals */}
         {step === 5 && (
           <div className="space-y-4 animate-fadeIn">
-            <h3 className="text-base font-bold text-slate-900 font-display">Step {totalSteps}: Recovery Goal</h3>
-            <p className="text-xs text-slate-500">Choose your current recovery focal area.</p>
+            <h3 className="text-base font-bold text-slate-900 font-display">{t('stepTitle')} {totalSteps}: {t('recoveryGoal')}</h3>
+            <p className="text-xs text-slate-500">{t('goalSubText')}</p>
 
             <div className="space-y-2">
               {activeGoals.map((g) => (
@@ -269,7 +269,7 @@ export function OnboardingWizard({ onComplete }) {
             disabled={step === 1}
             className="px-4 py-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-250 disabled:opacity-40 text-xs font-semibold flex items-center gap-1 cursor-pointer"
           >
-            <ChevronLeft className="h-4 w-4" /> Previous
+            <ChevronLeft className="h-4 w-4" /> {t('previous')}
           </button>
 
           {step < 5 ? (
@@ -278,7 +278,7 @@ export function OnboardingWizard({ onComplete }) {
               onClick={handleNext}
               className="px-5 py-2.5 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm flex items-center gap-1 cursor-pointer"
             >
-              <span>Next</span> <ChevronRight className="h-4 w-4" />
+              <span>{t('next')}</span> <ChevronRight className="h-4 w-4" />
             </button>
           ) : (
             <button
@@ -287,7 +287,7 @@ export function OnboardingWizard({ onComplete }) {
               className="px-6 py-2.5 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-xs shadow-sm flex items-center gap-1 cursor-pointer"
             >
               <Check className="h-4 w-4 stroke-[3]" />
-              <span>Complete Setup</span>
+              <span>{t('completeSetup')}</span>
             </button>
           )}
         </div>

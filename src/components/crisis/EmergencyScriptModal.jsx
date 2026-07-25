@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { X, PhoneCall, AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-react';
 
 export function EmergencyScriptModal() {
-  const { setActiveModal, speakText } = useApp();
+  const { setActiveModal, speakText, t } = useApp();
   const [currentStep, setCurrentStep] = useState(0);
 
   const STEPS = [
@@ -42,44 +42,44 @@ export function EmergencyScriptModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-fadeIn">
-      <div className="glass-panel w-full max-w-xl p-6 sm:p-8 relative border-2 border-rose-600/50 shadow-2xl bg-slate-950">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-fadeIn text-[#243746]">
+      <div className="bg-white rounded-3xl w-full max-w-xl p-6 sm:p-8 relative border-2 border-rose-500/40 shadow-2xl">
         
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 mb-4 pb-3 border-b border-slate-800">
+        <div className="flex items-start justify-between gap-4 mb-4 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-rose-600/20 text-rose-500 border border-rose-500/30">
+            <div className="p-3 rounded-xl bg-rose-50 text-rose-600 border border-rose-100">
               <AlertTriangle className="h-6 w-6 animate-bounce" />
             </div>
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-400">Emergency Protocol (India)</span>
-              <h2 className="text-xl sm:text-2xl font-bold text-white font-display">Naloxone & CPR Response Guide</h2>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-500">Emergency Protocol (India)</span>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-display">Naloxone & CPR Response Guide</h2>
             </div>
           </div>
           <button
             onClick={() => setActiveModal(null)}
-            className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+            className="p-2 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Dial 112 / 108 Call Banner */}
-        <div className="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-rose-600/20 border border-rose-500/40 mb-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-rose-200">
-            <PhoneCall className="h-4 w-4 text-rose-400 shrink-0" />
-            <span>If unresponsive, call emergency services right now:</span>
+        <div className="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-rose-50 border border-rose-200 mb-6">
+          <div className="flex items-center gap-2 text-xs font-semibold text-rose-800">
+            <PhoneCall className="h-4 w-4 text-rose-600 shrink-0" />
+            <span>If unresponsive, call emergency services:</span>
           </div>
           <div className="flex items-center gap-2">
             <a
               href="tel:112"
-              className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-black text-xs shrink-0 shadow-md shadow-rose-600/40"
+              className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shrink-0 shadow-md shadow-rose-600/30"
             >
               112
             </a>
             <a
               href="tel:108"
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs shrink-0 border border-slate-700"
+              className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shrink-0"
             >
               108
             </a>
@@ -92,23 +92,23 @@ export function EmergencyScriptModal() {
             <div
               key={idx}
               className={`h-2 flex-1 rounded-full transition-colors ${
-                idx <= currentStep ? 'bg-rose-500' : 'bg-slate-800'
+                idx <= currentStep ? 'bg-rose-500' : 'bg-slate-100'
               }`}
             />
           ))}
         </div>
 
         {/* Step Card */}
-        <div className="glass-card p-5 rounded-2xl border border-slate-700 mb-6">
+        <div className="healthcare-card p-5 bg-white border border-slate-100 mb-6">
           <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-bold text-rose-400 uppercase tracking-wider">{STEPS[currentStep].badge}</span>
+            <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">{STEPS[currentStep].badge}</span>
             <span className="text-xs text-slate-400 font-mono">Step {currentStep + 1} of {STEPS.length}</span>
           </div>
 
-          <h3 className="text-lg font-bold text-white mb-2">{STEPS[currentStep].title}</h3>
-          <p className="text-sm text-slate-200 leading-relaxed mb-4">{STEPS[currentStep].instruction}</p>
+          <h3 className="text-lg font-bold text-slate-900 mb-2">{STEPS[currentStep].title}</h3>
+          <p className="text-sm text-slate-650 leading-relaxed mb-4">{STEPS[currentStep].instruction}</p>
           
-          <div className="p-3 rounded-lg bg-rose-950/40 border border-rose-900/50 text-xs text-rose-300 font-medium">
+          <div className="p-3 rounded-lg bg-rose-50 border border-rose-100 text-xs text-rose-800 font-medium">
             🚨 <strong>Important:</strong> {STEPS[currentStep].warning}
           </div>
         </div>
@@ -118,23 +118,23 @@ export function EmergencyScriptModal() {
           <button
             onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
             disabled={currentStep === 0}
-            className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 disabled:opacity-50 text-xs font-semibold"
+            className="px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-800 disabled:opacity-50 text-xs font-semibold cursor-pointer"
           >
-            Previous
+            {t('previous')}
           </button>
 
           {currentStep < STEPS.length - 1 ? (
             <button
               onClick={handleNextStep}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm shadow-lg shadow-rose-600/30"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md cursor-pointer"
             >
-              <span>Next Step</span>
+              <span>{t('next')}</span>
               <ChevronRight className="h-4 w-4" />
             </button>
           ) : (
             <button
               onClick={() => setActiveModal(null)}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-sm shadow-lg shadow-teal-500/30"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#4F7C82] hover:bg-[#3d6065] text-white font-bold text-sm shadow-md cursor-pointer"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>Complete Guide</span>
