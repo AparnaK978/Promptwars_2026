@@ -1,13 +1,16 @@
 import React from 'react';
 import { Home, Activity, Bot, BookOpen, User } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 
 export function BottomNav({ activeTab, setActiveTab }) {
+  const { t } = useApp();
+
   const TABS = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'recovery', label: 'Recovery', icon: Activity },
-    { id: 'ai', label: 'AI Companion', icon: Bot },
-    { id: 'resources', label: 'Resources', icon: BookOpen },
-    { id: 'profile', label: 'Profile', icon: User }
+    { id: 'home', label: t('homeTab'), icon: Home },
+    { id: 'recovery', label: t('recoveryTab'), icon: Activity },
+    { id: 'ai', label: t('aiTab'), icon: Bot },
+    { id: 'resources', label: t('resourcesTab'), icon: BookOpen },
+    { id: 'profile', label: t('profileTab'), icon: User }
   ];
 
   return (

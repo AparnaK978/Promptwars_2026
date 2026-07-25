@@ -1,4 +1,4 @@
-// LocalStorage privacy-first storage manager with Clean Slate & Hackathon Demo Mode support
+// Secure localized browser LocalStorage serialization wrapper
 
 const KEYS = {
   ROLE: 'beacon_user_role',
@@ -9,32 +9,18 @@ const KEYS = {
   HIGH_CONTRAST: 'beacon_high_contrast'
 };
 
-// Realistic Indian Demo Data for Hackathon Judges
-export const DEMO_SAMPLE_LOGS = [
-  {
-    id: 'demo_1',
-    timestamp: '10:30 AM',
-    date: '2026-07-25',
-    intensity: 4,
-    triggers: ['Work Stress', 'Evening Routine'],
-    aiAdvice: 'Practiced 4-7-8 urge surfing. Craving passed in 6 minutes.'
-  },
-  {
-    id: 'demo_2',
-    timestamp: '08:15 PM',
-    date: '2026-07-24',
-    intensity: 6,
-    triggers: ['Social Pressure'],
-    aiAdvice: 'Used 1-tap de-escalation audio and spoke with family counselor.'
-  }
-];
+// Simple input output sanitization helper to block XSS payloads
+export function sanitizeString(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>]/g, '');
+}
 
 export const StorageService = {
   getRole() {
-    return localStorage.getItem(KEYS.ROLE) || 'individual';
+    return sanitizeString(localStorage.getItem(KEYS.ROLE)) || 'individual';
   },
   setRole(role) {
-    localStorage.setItem(KEYS.ROLE, role);
+    localStorage.setItem(KEYS.ROLE, sanitizeString(role));
   },
 
   isDemoMode() {
@@ -46,17 +32,34 @@ export const StorageService = {
 
   getCravingLogs() {
     try {
-      const isDemo = this.isDemoMode();
       const data = localStorage.getItem(KEYS.CRAVING_LOGS);
-      if (data) return JSON.parse(data);
-      return isDemo ? DEMO_SAMPLE_LOGS : []; // Clean Slate by default!
-    } catch {
+      if (data) {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+      return this.isDemoMode() ? [
+        {
+          id: 'demo_1',
+          timestamp: '10:30 AM',
+          date: '2026-07-25',
+          intensity: 4,
+          triggers: ['Work Stress'],
+          aiAdvice: 'Practiced 4-7-8 urge surfing.'
+        }
+      ] : [];
+    } catch (e) {
+      console.warn("Storage warning: craving logs parsing failed. Resetting.", e);
       return [];
     }
   },
   saveCravingLog(entry) {
     const logs = this.getCravingLogs();
-    const updated = [entry, ...logs].slice(0, 50);
+    const cleanEntry = {
+      ...entry,
+      aiAdvice: sanitizeString(entry.aiAdvice),
+      triggers: entry.triggers ? entry.triggers.map(sanitizeString) : []
+    };
+    const updated = [cleanEntry, ...logs].slice(0, 50);
     localStorage.setItem(KEYS.CRAVING_LOGS, JSON.stringify(updated));
     return updated;
   },
@@ -71,16 +74,20 @@ export const StorageService = {
   },
   saveJournal(entry) {
     const journals = this.getJournals();
-    const updated = [entry, ...journals].slice(0, 30);
+    const cleanEntry = {
+      ...entry,
+      rawText: sanitizeString(entry.rawText),
+      aiInsights: entry.aiInsights ? entry.aiInsights.map(sanitizeString) : []
+    };
+    const updated = [cleanEntry, ...journals].slice(0, 30);
     localStorage.setItem(KEYS.JOURNAL_ENTRIES, JSON.stringify(updated));
     return updated;
   },
 
   getStreakDays() {
-    const isDemo = this.isDemoMode();
     const val = localStorage.getItem(KEYS.STREAK_DAYS);
     if (val !== null) return parseInt(val, 10);
-    return isDemo ? 14 : 0; // Clean Slate: 0 days for real users, 14 days for judges in Demo Mode!
+    return this.isDemoMode() ? 14 : 0;
   },
   setStreakDays(val) {
     localStorage.setItem(KEYS.STREAK_DAYS, val.toString());

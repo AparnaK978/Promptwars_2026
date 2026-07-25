@@ -180,10 +180,14 @@ function AppContent() {
   );
 }
 
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+
 export default function App() {
   return (
     <AppProvider>
-      <AppContent />
+      <ErrorBoundary>
+        <AppContent />
+      </ErrorBoundary>
     </AppProvider>
   );
 }

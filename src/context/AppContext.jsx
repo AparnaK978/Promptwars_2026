@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { StorageService } from '../services/storage';
 import { AuthService, CLEAN_SLATE_PROFILE } from '../services/auth';
+import { getTranslation } from '../services/i18n';
 
 const AppContext = createContext();
 
@@ -15,18 +16,57 @@ export function AppProvider({ children }) {
   const [cravingLogs, setCravingLogs] = useState(() => StorageService.getCravingLogs());
   const [journals, setJournals] = useState(() => StorageService.getJournals());
 
-  // Modals & Overlays
-  const [activeModal, setActiveModal] = useState(null);
+  // Speech Recognition States: 'idle' | 'listening' | 'processing' | 'speaking'
+  const [voiceAssistantState, setVoiceAssistantState] = useState('idle');
   const [speechOutputEnabled, setSpeechOutputEnabled] = useState(true);
+  const [activeModal, setActiveModal] = useState(null);
+
+  // Internationalization Helper
+  const t = (key) => {
+    return getTranslation(userProfile.language || 'English', key);
+  };
+
+  // Browser Speech Synthesis Engine voice selection mapping
+  const getSelectedVoice = () => {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices();
+    const pref = userProfile.preferredVoice || 'calm_female';
+
+    if (pref === 'calm_female') {
+      return voices.find(v => v.name.includes('Female') || v.name.includes('Zira') || v.name.includes('Google US English')) || voices[0];
+    } else if (pref === 'calm_male') {
+      return voices.find(v => v.name.includes('Male') || v.name.includes('David') || v.name.includes('Google UK English Male')) || voices[0];
+    }
+    return voices.find(v => v.name.includes('Natural') || v.name.includes('Google')) || voices[0];
+  };
 
   const speakText = (text) => {
     if (!speechOutputEnabled || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[*_#`]/g, '');
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
-    window.speechSynthesis.speak(utterance);
+    try {
+      window.speechSynthesis.cancel();
+      setVoiceAssistantState('speaking');
+      const cleanText = text.replace(/[*_#`]/g, '');
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      
+      const matchedVoice = getSelectedVoice();
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+      
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+      utterance.onend = () => {
+        setVoiceAssistantState('idle');
+      };
+      utterance.onerror = () => {
+        setVoiceAssistantState('idle');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn("Speech Synthesis failed:", e);
+      setVoiceAssistantState('idle');
+    }
   };
 
   const setRole = (newRole) => {
@@ -69,7 +109,6 @@ export function AppProvider({ children }) {
     setJournals(updated);
   };
 
-  // Auth Operations
   const login = (email, password) => {
     const sess = AuthService.login(email, password);
     setSession(sess);
@@ -124,6 +163,13 @@ export function AppProvider({ children }) {
     setShowOnboarding(false);
   };
 
+  // Populate browser voices on start
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+    }
+  }, []);
+
   return (
     <AppContext.Provider value={{
       session,
@@ -144,7 +190,10 @@ export function AppProvider({ children }) {
       setActiveModal,
       speechOutputEnabled,
       setSpeechOutputEnabled,
+      voiceAssistantState,
+      setVoiceAssistantState,
       speakText,
+      t,
       login,
       signup,
       loginAsGuest,
